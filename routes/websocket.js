@@ -61,6 +61,21 @@ let commands = {
       this.send(JSON.stringify({c: 'error', d: 'No data'}));
     }
   },
+  playerInput: function(data) {
+    let playerId = rplayers.get(this);
+    if (data.hasOwnProperty('location') && data.hasOwnProperty('input')) {
+      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+        if (!err && enemyId) {
+          let client = players.get(enemyId);
+          client.send(JSON.stringify({c: 'input', d: data}));
+        } else {
+          this.send(JSON.stringify({c: 'wait', d: 'No enemy'}));
+        }
+      });
+    } else {
+      this.send(JSON.stringify({c: 'error', d: 'No data'}));
+    }
+  },
   stopPlayer: function(data) {
     let playerId = rplayers.get(this);
     if (data.hasOwnProperty('location')) {
@@ -171,6 +186,9 @@ function handleMessage (msg) {
         break;
       case 'move':
         commands.movePlayer.call(this, m.d);
+        break;
+      case 'input':
+        commands.playerInput.call(this, m.d);
         break;
       case 'stop':
         commands.stopPlayer.call(this, m.d);
