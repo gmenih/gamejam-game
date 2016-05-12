@@ -2,6 +2,7 @@
 const GRAVITY = 0.003;
 const WIDTH = 1280;
 const HEIGHT = 720;
+const SCALE = 2;
 
 (function () {
 
@@ -24,6 +25,12 @@ const HEIGHT = 720;
             this.player = createPlayer();
             this.player.image = game.load.images.get('spritesheet');
 
+            this.camera = new Utility.Vector2(0, 0);
+            this.canvas_center = new Utility.Vector2(
+                (WIDTH * 0.5) / SCALE,
+                (HEIGHT * 0.5) / SCALE
+            );
+
             // Placeholder level
             this.level = createLevel(game.load.images.get('tileset'), [
                 [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
@@ -45,18 +52,22 @@ const HEIGHT = 720;
         },
 
         render: function (canvas) {
-            canvas.clear();
-            canvas.context.translate(4, 4);
+
+            // Offset canvas so the player in centered.
+            var offset = this.player.location.copy().sub(this.canvas_center);
+            canvas.context.translate(this.camera.x - offset.x, this.camera.y - offset.y);
+            this.camera = offset.copy();
+
+            // Render elements.
+            canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
             this.level.render(canvas);
             canvas.drawSprite(this.player);
-            canvas.context.translate(-4, -4);
-            canvas.context.restore();
         },
     });
 
     // Set up canvas.
     Utility.Game.canvas.create(WIDTH, HEIGHT, 'game-canvas');
-    Utility.Game.canvas.context.scale(0.5, 0.5);
+    Utility.Game.canvas.context.scale(SCALE, SCALE);
     Utility.Game.canvas.context['imageSmoothingEnabled'] = false;       /* standard */
     Utility.Game.canvas.context['mozImageSmoothingEnabled'] = false;    /* Firefox */
     Utility.Game.canvas.context['oImageSmoothingEnabled'] = false;      /* Opera */
