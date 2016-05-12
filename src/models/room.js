@@ -12,26 +12,41 @@ let RoomSchema = new Schema({
     min: 3,
     max: 64
   },
-  playerCount: {
-    type: Number,
-    min: 1,
-    max: 2,
-    default: 1
-  }
+  players: [{
+    type: String,
+    default: ''
+  }]
 });
 
 RoomSchema.statics = {
   loadAllRooms: function (callback) {
-    return this.find({playerCount: 1})
-      .select('name password')
+    return this.find({$where: "this.players.length < 2"})
+      .select('name password players')
       .exec(callback);
   },
   loadById: function (id, callback) {
     return this.findOne({_id: id})
-      .select('name password')
+      .select('name password players')
       .exec(callback);
+  },
+  loadEnemyPlayer: function(playerId, callback) {
+    return this.findOne({players: playerId})
+      .select('players')
+      .exec((err, data) => {
+        if (!err && data) {
+          let enemy = data.players.reduce((p, c) => {
+            if (c !== playerId){
+              p = c;
+              return c;
+            }
+            else
+              return p;
+          }, '');
+          callback(null, enemy);
+        } else 
+          callback(err, data);
+      })
   }
 }
 
-console.log("Exporting schema");
 mongoose.model('Room', RoomSchema);

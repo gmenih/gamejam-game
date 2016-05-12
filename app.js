@@ -62,7 +62,7 @@ app.use(passport.session());
 /** Flash */
 app.use(flash());
 /** ROUTES */
-// require('./routes/websocket');
+require('./routes/websocket');
 app.use('/', routes);
 
 /** Handle 404 */
