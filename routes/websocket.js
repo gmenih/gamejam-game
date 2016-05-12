@@ -50,8 +50,34 @@ let commands = {
       this.send('No data');
     }
   },
+  stopPlayer: function(data) {
+    let playerId = rplayers.get(this);
+    if (data.hasOwnProperty('location')) {
+      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+        if (!err && enemyId) {
+          let client = players.get(enemyId);
+          client.send(JSON.stringify({c: 'stop', d: data}));
+        } else {
+          this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
+        }
+      })
+    } else {
+      this.send(JSON.stringify({c: 'error', d: 'No data'}));
+    }
+  },
   unrecognized: function() {
     this.send('Unrecognized command');
+  },
+  allowAny: function(message) {
+    let playerId = rplayers.get(this);
+    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+      if (!err && enemyId) {
+        let client = players.get(enemyId);
+        client.send(JSON.stringify(m));
+      } else {
+        this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
+      }
+    })
   }
 }
 
@@ -63,22 +89,25 @@ function handleMessage (msg) {
     console.error(ex);
     return;
   }
-  if (m.hasOwnProperty('c')) {
-    switch(m.c) {
-      case 'connect':
-        commands.connectPlayer.call(this, m.d);
-        break;
-      case 'move':
-        commands.movePlayer.call(this, m.d);
-        break;
-      default:
-        commands.unrecognized.call(this);
-        break;
-    }
-  } else {
-    console.error('No command given');
-    this.send('no command');
-  }
+  commands.allowAny.call(this, m);
+  // if (m.hasOwnProperty('c')) {
+  //   switch(m.c) {
+  //     case 'connect':
+  //       commands.connectPlayer.call(this, m.d);
+  //       break;
+  //     case 'move':
+  //       commands.movePlayer.call(this, m.d);
+  //       break;
+  //     case 'stop':
+  //       commands.stopPlayer.call(this, m.d);
+  //     default:
+  //       commands.unrecognized.call(this);
+  //       break;
+  //   }
+  // } else {
+  //   console.error('No command given');
+  //   this.send('no command');
+  // }
 }
 
 function handleDisconnect () {
