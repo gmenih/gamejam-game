@@ -13,7 +13,7 @@ server.on('connection', (client) => {
   client.on('close', handleDisconnect);
   client.on('error', handleError);
 
-  client.send('Connection received!');
+  // client.send('Connection received!');
 });
 
 let commands = {
@@ -24,11 +24,22 @@ let commands = {
           let playerId = mongoose.Types.ObjectId().toString();
           players.set(playerId, this);
           rplayers.set(this, playerId);
-          this.send(JSON.stringify({c: 'connected', d: playerId}));
           room.players.push(playerId);
           room.save();
+          if (room.players.length === 2) {
+            Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+              if (!err && enemyId) {
+                let client = players.get(enemyId);
+                client.send(JSON.stringify({c: 'start', d: 'Player 2 connected'}));
+                this.send(JSON.stringify({c: 'start', d: 'Player 2 connected'}));
+              } else {
+                this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
+              }
+            });
+          } else 
+            this.send(JSON.stringify({c: 'wait', d: 'No enemy'}));
         } else {
-          this.send("Error");
+          this.send(JSON.stringify({c: 'error', d: 'Room doesnt exist'}));
         } 
       });
     } else {
@@ -43,11 +54,11 @@ let commands = {
           let client = players.get(enemyId);
           client.send(JSON.stringify({c: 'move', d: data}));
         } else {
-          this.send('Fak');
+          this.send(JSON.stringify({c: 'wait', d: 'No enemy'}));
         }
       });
     } else {
-      this.send('No data');
+      this.send(JSON.stringify({c: 'error', d: 'No data'}));
     }
   },
   stopPlayer: function(data) {
@@ -60,13 +71,77 @@ let commands = {
         } else {
           this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
         }
-      })
+      });
     } else {
       this.send(JSON.stringify({c: 'error', d: 'No data'}));
     }
   },
+  playerShoot: function(data) {
+    let playerId = rplayers.get(this);
+    if (data.hasOwnProperty('location')
+      && data.hasOwnProperty('direction')) {
+      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+        if (!err && enemyId) {
+          let client = players.get(enemyId);
+          client.send(JSON.stringify({c: 'shoot', d: data}));
+        } else {
+          this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
+        }
+      });
+    } else {
+      this.send(JSON.stringify({c:'error', d: 'No data'}));
+    }
+  },
+  playerDead: function() {
+    let playerId = rplayers.get(this);
+    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+      if (!err && enemyId) {
+        let client = players.get(enemyId);
+        client.send(JSON.stringify({c: 'dead', d: data}));
+      } else {
+        this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
+      }
+    });
+  },
+  playerRespawn: function(data) {
+    let playerId = rplayers.get(this);
+    if (data.hasOwnProperty('location')) {
+      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+        if (!err && enemyId) {
+          let client = players.get(enemyId);
+          client.send(JSON.stringify({c: 'respawn', d: data}));
+        } else {
+          this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
+        }
+      });
+    } else {
+      this.send(JSON.stringify({c:'error', d: 'No location'}));
+    }
+  },
+  playerPickFlag: function() {
+    let playerId = rplayers.get(this);
+    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+      if (!err && enemyId) {
+        let client = players.get(enemyId);
+        client.send(JSON.stringify({c: 'pickup', d: null}));
+      } else {
+        this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
+      }
+    });
+  },
+  playerWin: function() {
+    let playerId = rplayers.get(this);
+    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
+      if (!err && enemyId) {
+        let client = players.get(enemyId);
+        client.send(JSON.stringify({c: 'win', d: null}));
+      } else {
+        this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
+      }
+    });
+  },
   unrecognized: function() {
-    this.send('Unrecognized command');
+    this.send(JSON.stringify({c: 'error', d: 'Unknown command'}));
   },
   allowAny: function(message) {
     let playerId = rplayers.get(this);
@@ -89,25 +164,40 @@ function handleMessage (msg) {
     console.error(ex);
     return;
   }
-  commands.allowAny.call(this, m);
-  // if (m.hasOwnProperty('c')) {
-  //   switch(m.c) {
-  //     case 'connect':
-  //       commands.connectPlayer.call(this, m.d);
-  //       break;
-  //     case 'move':
-  //       commands.movePlayer.call(this, m.d);
-  //       break;
-  //     case 'stop':
-  //       commands.stopPlayer.call(this, m.d);
-  //     default:
-  //       commands.unrecognized.call(this);
-  //       break;
-  //   }
-  // } else {
-  //   console.error('No command given');
-  //   this.send('no command');
-  // }
+  if (m.hasOwnProperty('c')) {
+    switch(m.c) {
+      case 'connect':
+        commands.connectPlayer.call(this, m.d);
+        break;
+      case 'move':
+        commands.movePlayer.call(this, m.d);
+        break;
+      case 'stop':
+        commands.stopPlayer.call(this, m.d);
+        break;
+      case 'shoot':
+        commands.playerShoot.call(this, m.d);
+        break;
+      case 'dead':
+        commands.playerDead.call(this, m.d);
+        break;
+      case 'respawn':
+        commands.playerRespawn.call(this, m.d);
+        break;
+      case 'pickup':
+        commands.playerPickFlag.call(this, m.d);
+        break;
+      case 'win':
+        commands.playerWin.call(this, m.d);
+        break;
+      default:
+        commands.allowAny.call(this, m);
+        break;
+    }
+  } else {
+    console.error('No command given');
+    this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
+  }
 }
 
 function handleDisconnect () {
