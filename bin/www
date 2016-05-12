@@ -1,5 +1,9 @@
+let mongoose = require('mongoose');
+let fs = require('fs');
+let db = require('../src/database');
+/** Require models */
+require('../src/models/room');
 let app = require('../app');
-
 let config = require('../config');
 
 let listener = app.listen(config.httpPort || 3000, () => {

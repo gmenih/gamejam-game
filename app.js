@@ -20,12 +20,13 @@ let mgDb = require('./src/database');
 /** @type {express} The application variables */
 let app = express();
 /** Set view engine */
+app.set('views', path.join(__dirname, 'src/views'));
 app.engine('hbs', handlebars(
   {
-    extname: '.hbs'
+    extname: '.hbs',
+    defaultLayout: path.join(__dirname, 'src/views/layouts/main')
   })
 );
-app.set('views', path.join(__dirname, 'src/views'));
 app.set('view engine', 'hbs');
 /** Body parser */
 app.use(bodyParser.json());
@@ -60,12 +61,8 @@ app.use(passport.initialize());
 app.use(passport.session());
 /** Flash */
 app.use(flash());
-/** Require models */
-fs.readdirSync(__dirname + '/src/models').forEach((f) => {
-  if (~f.indexOf('.js')) require(__dirname + '/src/models/' + f);
-});
 /** ROUTES */
-require('./routes/websocket');
+// require('./routes/websocket');
 app.use('/', routes);
 
 /** Handle 404 */

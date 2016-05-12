@@ -22,7 +22,8 @@
     "express-handlebars": "^3.0.0",
     "express-session": "^1.13.0",
     "method-override": "^2.3.5",
-    "mongoose": "^4.4.16",
+    "mongoose": "^4.4.10",
+    "nodemon": "^1.9.2",
     "passport": "^0.3.2",
     "ws": "^1.1.0"
   }
