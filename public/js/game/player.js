@@ -15,7 +15,7 @@ var createPlayer = function () {
         return {
             right: keyboard.isDown(Utility.Keys.D),
             left: keyboard.isDown(Utility.Keys.A),
-            jump: (player.on_ground && game.keyboard.pressed(Utility.Keys.W)),
+            jump: (player.on_ground && keyboard.pressed(Utility.Keys.W)),
         };
     };
 

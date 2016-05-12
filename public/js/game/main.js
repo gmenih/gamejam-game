@@ -32,7 +32,6 @@ const SCALE = 3;
                     try {
                         data = JSON.parse(msg.data);
                     } catch (ex) {
-                        console.log(msg.data);
                         console.error(ex);
                         return;
                     }
@@ -50,11 +49,12 @@ const SCALE = 3;
                                 master.enemy_player.getInput = function (keyboard) {
                                     return master.enemy_player.input;
                                 };
+                                master.enemy_player.update = function () {}
                                 master.players.push(master.enemy_player);
                                 break;
                             case 'move':
-                                master.enemy_player.location.x = data.location.x;
-                                master.enemy_player.location.y = data.location.y;
+                                master.enemy_player.location.x = data.d.location.x;
+                                master.enemy_player.location.y = data.d.location.y;
                                 break;
                             default:
                                 console.log(data);
@@ -102,7 +102,10 @@ const SCALE = 3;
             canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
             this.level.renderLayer(canvas, this.level.layers.background);
             this.level.renderLayer(canvas, this.level.layers.middleground);
-            this.players.forEach(player => canvas.drawSprite(this.player));
+            this.players.forEach((player) => {
+                // canvas.drawSprite(this.player)
+                canvas.drawRect(player.getBounds(), 'red');
+            });
             this.level.renderLayer(canvas, this.level.layers.foreground);
             this.level.renderLayer(canvas, this.level.layers.foreground);
         },
