@@ -10,6 +10,7 @@ var createPlayer = function () {
     player.jump_speed = -0.9;
     player.deacceleration = 0.8;
     player.on_ground = false;
+    player.last_send_elapsed = 0;
 
     player.getInput = function (keyboard) {
         return {
@@ -38,14 +39,27 @@ var createPlayer = function () {
     };
 
     player.sendInput = function (input, game) {
-        if (player.connected && JSON.stringify(player.pass_input) !== JSON.stringify(input)) {
-            game.ws.send(JSON.stringify({
-                c: 'input',
-                d: {
-                    location: player.location,
-                    input: input
-                }
-            }));
+        if (player.connected) {
+            if (JSON.stringify(player.pass_input) !== JSON.stringify(input)) {
+                game.ws.send(JSON.stringify({
+                    c: 'input',
+                    d: {
+                        location: player.location,
+                        input: input
+                    }
+                }));
+            } else if (player.last_send_elapsed > 1000) {
+                player.last_send_elapsed = 0;
+                game.ws.send(JSON.stringify({
+                    c: 'move',
+                    d: {
+                        location: player.location,
+                        direction: 1,
+                    }
+                }));
+            }
+
+            player.last_send_elapsed += dt;
         }
 
         player.pass_input = input;
@@ -74,7 +88,7 @@ var createPlayer = function () {
             player.velocity.y = player.jump_speed;
         }
 
-        player.sendInput(input, game);
+        player.sendInput(input, game, dt);
 
         // Resolve collision.
         var tiles = game.level.layers.collision;

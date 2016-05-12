@@ -58,6 +58,10 @@ const SCALE = 1;
                                 master.enemy_player.location.y = data.d.location.y;
                                 master.enemy_player.input = data.d.input;
                                 break;
+                            case 'move':
+                                master.enemy_player.location.x = data.d.location.x;
+                                master.enemy_player.location.y = data.d.location.y;
+                                break;
                             default:
                                 console.log(data);
                                 break;
