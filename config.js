@@ -13,7 +13,7 @@ module.exports = {
   environment: 'development',
 
   mongo: {
-    host: 'localhost',
+    host: '192.168.2.121',
     port: '27017',
     database: 'test_dev',
     username: '',

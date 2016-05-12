@@ -22,6 +22,24 @@ const SCALE = 3;
         },
 
         onready: function (game) {
+
+            // Connect to server
+            var ws = getWebSocket({
+
+                onconnected: function (msg) {
+                    ws.send(JSON.stringify({
+                        location: {x: 100, y: 100}
+                    }));
+                },
+
+                onmessage: function (msg) {
+                    var data = JSON.parse(msg.data);
+                    console.log(data);
+                }
+            });
+
+            this.ws = ws;
+
             this.keyboard = game.keyboard;
             this.player = createPlayer();
             this.player.location.x = 100;
@@ -57,7 +75,7 @@ const SCALE = 3;
             this.level.renderLayer(canvas, this.level.layers.middleground);
             canvas.drawSprite(this.player);
             this.level.renderLayer(canvas, this.level.layers.foreground);
-            this.level.renderLayer(canvas, this.level.layers.collision);
+            this.level.renderLayer(canvas, this.level.layers.foreground);
         },
     });
 
