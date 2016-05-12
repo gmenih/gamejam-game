@@ -11,6 +11,14 @@ var createPlayer = function () {
     player.deacceleration = 0.8;
     player.on_ground = false;
 
+    player.getInput = function (keyboard) {
+        return {
+            right: keyboard.isDown(Utility.Keys.D),
+            left: keyboard.isDown(Utility.Keys.A),
+            jump: (player.on_ground && game.keyboard.pressed(Utility.Keys.W)),
+        };
+    };
+
     player.getBounds = function () {
         return new Utility.Rectangle(
             player.location.x,
@@ -34,11 +42,13 @@ var createPlayer = function () {
         // Apply gravity.
         player.velocity.y += dt * GRAVITY;
 
+        var input = player.getInput(game.keyboard);
+
         // Move left and right.
-        if (game.keyboard.isDown(Utility.Keys.D)) {
+        if (input.right) {
             player.velocity.x = player.speed;
             player.src_rect.x = 32;
-        } else if (game.keyboard.isDown(Utility.Keys.A)) {
+        } else if (input.left) {
             player.velocity.x = -player.speed;
             player.src_rect.x = 0;
         } else {
@@ -46,10 +56,8 @@ var createPlayer = function () {
         }
 
         // Jump.
-        if (player.on_ground && game.keyboard.pressed(Utility.Keys.W)) {
+        if (input.jump) {
             player.velocity.y = player.jump_speed;
-        } else if (player.velocity.y < 0 && game.keyboard.released (Utility.Keys.W)) {
-            player.velocity.y = player.velocity.y * 0.5;
         }
 
         // Resolve collision.
@@ -91,6 +99,15 @@ var createPlayer = function () {
         // Apply velocity.
         player.location.x += player.velocity.x * dt;
         player.location.y += player.velocity.y * dt;
+
+        // Send location
+        game.ws.send(JSON.stringify({
+            c: 'move',
+            d: {
+                location: player.location,
+                direction: 1
+            }
+        }));
     };
 
     return player;

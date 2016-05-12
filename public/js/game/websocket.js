@@ -1,4 +1,4 @@
-var getWebSocket = function ({onconnected, onmessage }) {
+var getWebSocket = function ({onmessage}) {
 
 	var roomId = document.getElementById('gameId').value;
 
@@ -9,7 +9,6 @@ var getWebSocket = function ({onconnected, onmessage }) {
     var handShake = setInterval(function () {
         if (ws.readyState === 1) {
             ws.send(handShakeData);
-            onconnected();
             window.clearInterval(handShake);
             console.log("Connection is made");
         } else {

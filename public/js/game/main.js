@@ -23,15 +23,10 @@ const SCALE = 3;
 
         onready: function (game) {
 
+            var master = this;
+
             // Connect to server
             var ws = getWebSocket({
-
-                onconnected: function (msg) {
-                    // ws.send(JSON.stringify({
-                    //     location: {x: 100, y: 100}
-                    // }));
-                },
-
                 onmessage: function (msg) {
                     var data;
                     try {
@@ -44,7 +39,21 @@ const SCALE = 3;
                     if (data.hasOwnProperty('c')) {
                         switch(data.c) {
                             case 'start':
-                                console.log('Player 2 connected!');
+                                master.enemy_player = createPlayer();
+                                master.enemy_player.image = game.load.images.get('spritesheet');
+                                master.enemy_player.input = {
+                                    right: false,
+                                    left: false,
+                                    jump: false,
+                                };
+                                master.enemy_player.getInput = function (keyboard) {
+                                    return master.enemy_player.input;
+                                };
+                                master.players.push(master.enemy_player);
+                                break;
+                            case 'move':
+                                master.enemy_player.location.x = data.location.x;
+                                master.enemy_player.location.y = data.location.y;
                                 break;
                             default:
                                 console.log(data);
@@ -67,6 +76,9 @@ const SCALE = 3;
                 (HEIGHT * 0.5) / SCALE
             );
 
+            this.players = [];
+            this.players.push(this.player);
+
             // Placeholder level
             this.level = createLevel(
                 game.load.images.get('tileset'),
@@ -75,7 +87,7 @@ const SCALE = 3;
         },
 
         update: function (dt, game) {
-            this.player.update(dt, this);
+            this.players.forEach(player => player.update(dt, this));
         },
 
         render: function (canvas) {
@@ -89,7 +101,7 @@ const SCALE = 3;
             canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
             this.level.renderLayer(canvas, this.level.layers.background);
             this.level.renderLayer(canvas, this.level.layers.middleground);
-            canvas.drawSprite(this.player);
+            this.players.forEach(player => canvas.drawSprite(this.player));
             this.level.renderLayer(canvas, this.level.layers.foreground);
             this.level.renderLayer(canvas, this.level.layers.foreground);
         },
