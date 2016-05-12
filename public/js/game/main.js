@@ -30,12 +30,6 @@ const HEIGHT = 720;
                 [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
                 [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
                 [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
                 [ 0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,  0],
 
                 [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0],
@@ -51,14 +45,25 @@ const HEIGHT = 720;
         },
 
         render: function (canvas) {
-
             canvas.clear();
+            canvas.context.translate(4, 4);
             this.level.render(canvas);
             canvas.drawSprite(this.player);
+            canvas.context.translate(-4, -4);
+            canvas.context.restore();
         },
     });
 
+    // Set up canvas.
     Utility.Game.canvas.create(WIDTH, HEIGHT, 'game-canvas');
+    Utility.Game.canvas.context.scale(0.5, 0.5);
+    Utility.Game.canvas.context['imageSmoothingEnabled'] = false;       /* standard */
+    Utility.Game.canvas.context['mozImageSmoothingEnabled'] = false;    /* Firefox */
+    Utility.Game.canvas.context['oImageSmoothingEnabled'] = false;      /* Opera */
+    Utility.Game.canvas.context['webkitImageSmoothingEnabled'] = false; /* Safari */
+    Utility.Game.canvas.context['msImageSmoothingEnabled'] = false;     /* IE */
+
+    // Start the game.
     Utility.Game.setState('game');
     Utility.Game.run();
 
