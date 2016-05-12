@@ -16,9 +16,9 @@ const SCALE = 3;
     Utility.Game.addState('game', {
 
         preload: function (game) {
-            game.load.image('tileset', 'assets/tileset.png');
-            game.load.image('spritesheet', 'assets/spritesheet.png');
-            game.load.json('level-1', 'assets/maps/level-1.json');
+            game.load.image('tileset', '/assets/tileset.png');
+            game.load.image('spritesheet', '/assets/spritesheet.png');
+            game.load.json('level-1', '/assets/maps/level-1.json');
         },
 
         onready: function (game) {
@@ -27,14 +27,30 @@ const SCALE = 3;
             var ws = getWebSocket({
 
                 onconnected: function (msg) {
-                    ws.send(JSON.stringify({
-                        location: {x: 100, y: 100}
-                    }));
+                    // ws.send(JSON.stringify({
+                    //     location: {x: 100, y: 100}
+                    // }));
                 },
 
                 onmessage: function (msg) {
-                    var data = JSON.parse(msg.data);
-                    console.log(data);
+                    var data;
+                    try {
+                        data = JSON.parse(msg.data);
+                    } catch (ex) {
+                        console.log(msg.data);
+                        console.error(ex);
+                        return;
+                    }
+                    if (data.hasOwnProperty('c')) {
+                        switch(data.c) {
+                            case 'start':
+                                console.log('Player 2 connected!');
+                                break;
+                            default:
+                                console.log(data);
+                                break;
+                        }
+                    }
                 }
             });
 
@@ -80,7 +96,7 @@ const SCALE = 3;
     });
 
     // Set up canvas.
-    Utility.Game.canvas.create(WIDTH, HEIGHT, 'game-canvas');
+    Utility.Game.canvas.set('gameCanvas');
     Utility.Game.canvas.context.scale(SCALE, SCALE);
     Utility.Game.canvas.context['imageSmoothingEnabled'] = false;       /* standard */
     Utility.Game.canvas.context['mozImageSmoothingEnabled'] = false;    /* Firefox */

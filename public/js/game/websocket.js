@@ -1,16 +1,16 @@
 var getWebSocket = function ({onconnected, onmessage }) {
 
-	var room_id = window.location.hash.replace('#', '');
+	var roomId = document.getElementById('gameId').value;
 
-	var hand_shake_data = JSON.stringify({ c: "connect", d: room_id });
+	var handShakeData = JSON.stringify({ c: "connect", d: roomId });
 
     var ws = new WebSocket('ws://localhost:3030');
 
-    var hand_shake = setInterval(function () {
+    var handShake = setInterval(function () {
         if (ws.readyState === 1) {
-            ws.send(hand_shake_data);
+            ws.send(handShakeData);
             onconnected();
-            window.clearInterval(hand_shake);
+            window.clearInterval(handShake);
             console.log("Connection is made");
         } else {
             console.log("wait for connection...")
