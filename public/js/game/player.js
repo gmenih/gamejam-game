@@ -37,6 +37,20 @@ var createPlayer = function () {
         ));
     };
 
+    player.sendInput = function (input, game) {
+        if (player.connected && JSON.stringify(player.pass_input) !== JSON.stringify(input)) {
+            game.ws.send(JSON.stringify({
+                c: 'input',
+                d: {
+                    location: player.location,
+                    input: input
+                }
+            }));
+        }
+
+        player.pass_input = input;
+    };
+
     player.update = function (dt, game) {
 
         // Apply gravity.
@@ -59,6 +73,8 @@ var createPlayer = function () {
         if (input.jump) {
             player.velocity.y = player.jump_speed;
         }
+
+        player.sendInput(input, game);
 
         // Resolve collision.
         var tiles = game.level.layers.collision;
@@ -99,17 +115,6 @@ var createPlayer = function () {
         // Apply velocity.
         player.location.x += player.velocity.x * dt;
         player.location.y += player.velocity.y * dt;
-
-        // Send location
-        if (player.connected) {
-            game.ws.send(JSON.stringify({
-                c: 'move',
-                d: {
-                    location: player.location,
-                    direction: 1
-                }
-            }));
-        }
     };
 
     return player;

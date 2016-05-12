@@ -52,9 +52,10 @@ const SCALE = 3;
                                 master.enemy_player.update = function () {}
                                 master.players.push(master.enemy_player);
                                 break;
-                            case 'move':
+                            case 'input':
                                 master.enemy_player.location.x = data.d.location.x;
                                 master.enemy_player.location.y = data.d.location.y;
+                                master.enemy_player.input = data.d.input;
                                 break;
                             default:
                                 console.log(data);
