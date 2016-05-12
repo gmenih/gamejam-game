@@ -1,5 +1,13 @@
+let mongoose = require('mongoose');
+let Room = mongoose.model('Room');
+
 module.exports = {
   index: (req, res, next) => {
-    res.render('home/index');
+    Room.loadAllRooms((err, rooms) => {
+      if (!err && rooms) {
+        res.render('home/index', {title: 'Rooms', rooms: rooms});
+      } else 
+        next(err);    
+    });
   }
 }

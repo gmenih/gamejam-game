@@ -11,28 +11,3 @@ server.on('connection', (client) => {
 
   client.send('Connection received!');
 });
-
-function handleMessage(msg) {
-  let parsedMsg;
-  try {
-    JSON.parse(msg);
-  } catch (ex) {
-    console.error(`Couldn't parse message!`);
-    return;
-  }
-  if (parsedMsg.hasOwnProperty('c')) {
-    Prototype.
-  }
-}
-
-function handleError() {
-
-}
-
-function handleDisconnect () {
-
-}
-
-function respondWithError () {
-
-}
