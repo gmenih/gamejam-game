@@ -1,7 +1,7 @@
 // CONST VALUES
 const GRAVITY = 0.003;
-const WIDTH = 800;
-const HEIGHT = 600;
+const WIDTH = 1280;
+const HEIGHT = 720;
 
 (function () {
 
@@ -51,6 +51,7 @@ const HEIGHT = 600;
         },
 
         render: function (canvas) {
+
             canvas.clear();
             this.level.render(canvas);
             canvas.drawSprite(this.player);

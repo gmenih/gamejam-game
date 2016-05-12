@@ -8,47 +8,52 @@ var createPlayer = function () {
     player.velocity = new Utility.Vector2();
     player.speed = 0.3;
     player.jump_speed = -0.9;
+    player.deacceleration = 0.8;
     player.on_ground = false;
 
     player.getBounds = function () {
         return new Utility.Rectangle(
-            this.location.x,
-            this.location.y,
-            this.size.x,
-            this.size.y
+            player.location.x,
+            player.location.y,
+            player.size.x,
+            player.size.y
         );
     };
 
     player.getCollisionZone = function (dt) {
-        return this.getBounds().merge(new Utility.Rectangle(
-            this.location.x + (this.velocity.x * dt),
-            this.location.y + (this.velocity.y * dt),
-            this.size.x,
-            this.size.y
+        return player.getBounds().merge(new Utility.Rectangle(
+            player.location.x + (player.velocity.x * dt),
+            player.location.y + (player.velocity.y * dt),
+            player.size.x,
+            player.size.y
         ));
     };
 
     player.update = function (dt, game) {
 
         // Apply gravity.
-        this.velocity.y += dt * GRAVITY;
+        player.velocity.y += dt * GRAVITY;
 
         // Move left and right.
         if (game.keyboard.isDown(Utility.Keys.D)) {
-            this.velocity.x = this.speed;
+            player.velocity.x = player.speed;
+            player.src_rect.x = 32;
         } else if (game.keyboard.isDown(Utility.Keys.A)) {
-            this.velocity.x = -this.speed;
+            player.velocity.x = -player.speed;
+            player.src_rect.x = 0;
         } else {
-            this.velocity.x = 0;
+            player.velocity.x = player.velocity.x * player.deacceleration;
         }
 
         // Jump.
-        if (this.on_ground && game.keyboard.isDown(Utility.Keys.W)) {
-            this.velocity.y = this.jump_speed;
+        if (player.on_ground && game.keyboard.pressed(Utility.Keys.W)) {
+            player.velocity.y = player.jump_speed;
+        } else if (player.velocity.y < 0 && game.keyboard.released (Utility.Keys.W)) {
+            player.velocity.y = player.velocity.y * 0.5;
         }
 
         // Resolve collision.
-        this.on_ground = false;
+        player.on_ground = false;
         game.level.tiles.forEach(function (row, y) {
             row.forEach(function (tile, x) {
                 var zone = player.getCollisionZone(dt);
@@ -83,8 +88,8 @@ var createPlayer = function () {
         });
 
         // Apply velocity.
-        this.location.x += this.velocity.x * dt;
-        this.location.y += this.velocity.y * dt;
+        player.location.x += player.velocity.x * dt;
+        player.location.y += player.velocity.y * dt;
     };
 
     return player;
