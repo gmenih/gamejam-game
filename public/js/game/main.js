@@ -60,7 +60,7 @@ const SCALE = 2;
 
             // Render elements.
             canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
-            this.level.render(canvas);
+            this.level.renderLayer(canvas, this.level.layers.collision);
             canvas.drawSprite(this.player);
         },
     });
