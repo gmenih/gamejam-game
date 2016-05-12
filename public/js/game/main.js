@@ -18,6 +18,7 @@ const SCALE = 2;
         preload: function (game) {
             game.load.image('tileset', 'assets/tileset.png');
             game.load.image('spritesheet', 'assets/spritesheet.png');
+            game.load.json('level-1', 'assets/maps/level-1.json');
         },
 
         onready: function (game) {
@@ -32,19 +33,10 @@ const SCALE = 2;
             );
 
             // Placeholder level
-            this.level = createLevel(game.load.images.get('tileset'), [
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,  0],
-
-                [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0],
-                [33, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 35],
-                [49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 51],
-            ]);
+            this.level = createLevel(
+                game.load.images.get('tileset'), 
+                game.load.data.get('level-1')
+            );
         },
 
         update: function (dt, game) {

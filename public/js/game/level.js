@@ -1,24 +1,27 @@
 
 // Place holder level.
-var createLevel = function (image, tiles) {
-
-    const tile_width = 32;
-    const tile_height = 32;
-    const tileset_width = 512 / tile_width;
-
-    /**
-     * get tile object.
-     *
-     * @author Blaž Pečnik <blaz@easistent.com>
-     *
-     * @param  {Utility.Rectangle} draw_rect [Where the tile is drawn on the screen]
-     * @param  {Utility.Rectangle} src_rect  [Which part of the image to draw]
-     *
-     * @return {Utility.Rectangle}
-     */
-    var getTile = function (draw_rect, src_rect) {
-        draw_rect.src_rect = src_rect;
-        return draw_rect;
+var createLevel = function (image, data) {
+    const tileWidth = 32;
+    const tileHeight = 32;
+    const tilesetWidth = 512 / tileWidth;
+    
+    function getTileObj(t, levelX, levelY) {
+        if (t === 0)
+            return null;
+        var tile = new Utility.Rectangle(levelX * tileWidth, levelY * tileHeight, tileWidth, tileHeight);
+        tile.src_rect = new Utility.Rectangle(
+            Math.round((t - 1) % tilesetWidth) * tileWidth,
+            Math.round((t - 1) / tilesetWidth) * tileHeight,
+            tileWidth,
+            tileHeight
+            );
+        return tile;
+    }
+    
+    var layer = function (w, h) {
+        this.height = h;
+        this.width = w;
+        this.tiles = [];
     };
 
     var level = {
@@ -40,8 +43,30 @@ var createLevel = function (image, tiles) {
         },
     };
 
+
+    for (var i in data.layers) {//each layer
+        var currentLayer = data.layers[i];
+        var tmpLayerObj = new layer(currentLayer.width, currentLayer.height);
+        var x = 0, y = 0;
+        var tmpArr = [];
+        for (var j in currentLayer.data) {//each tile
+            var tileNum = currentLayer.data[j];    
+            var tile = getTileObj(tileNum, x, y);
+            tmpArr.push(tile);
+            x++;
+            if (x >= tmpLayerObj.width) {
+                tmpLayerObj.tiles.push(tmpArr);
+                tmpArr = [];
+                y++;
+                x = 0;
+            }
+        }
+
+        level.layers[currentLayer.name] = tmpLayerObj.tiles;
+    }
+
     // TMP
-    level.layers.collision = tiles.map(function (row, y) {
+    /*level.layers.collision = tiles.map(function (row, y) {
         return row.map(function (id, x) {
             if (id === 0) {
                 return null;
@@ -58,10 +83,10 @@ var createLevel = function (image, tiles) {
                     Math.round((id - 1) / tileset_width) * tile_height,
                     tile_width,
                     tile_height
-                )
-            );
+                    )
+                );
         });
-    });
+    });*/
 
     return level;
 };
