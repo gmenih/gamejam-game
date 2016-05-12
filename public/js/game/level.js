@@ -42,7 +42,7 @@ var createLevel = function (tileset, tiles) {
             row.forEach(function (tile, x) {
                 if (tile !== null) {
                     canvas.drawImage(tileset, tile, tile.src_rect);
-                    canvas.drawText(x +', '+ y, tile, 8);
+                    // canvas.drawText(x +', '+ y, tile, 8); debug
                 }
             });
         });
