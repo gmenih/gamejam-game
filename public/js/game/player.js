@@ -53,8 +53,9 @@ var createPlayer = function () {
         }
 
         // Resolve collision.
+        var tiles = game.level.layers.collision;
         player.on_ground = false;
-        game.level.tiles.forEach(function (row, y) {
+        tiles.forEach(function (row, y) {
             row.forEach(function (tile, x) {
                 var zone = player.getCollisionZone(dt);
 
@@ -70,7 +71,7 @@ var createPlayer = function () {
                             player.location.y = tile.y - bounds.h;
                             player.velocity.y = 0;
                             player.on_ground = true;
-                        } else if (game.level.tiles[y + 1][x] === null) {
+                        } else if (tiles[y + 1][x] === null) {
                             player.location.y = tile.bottom;
                             player.velocity.y = 0;
                         }
@@ -78,7 +79,7 @@ var createPlayer = function () {
                         if (distance.x < 0) {
                             player.location.x = tile.x - bounds.w;
                             player.velocity.x = 0;
-                        } else if (game.level.tiles[y][x + 1] === null) {
+                        } else if (tiles[y][x + 1] === null) {
                             player.location.x = tile.right;
                             player.velocity.x = 0;
                         }

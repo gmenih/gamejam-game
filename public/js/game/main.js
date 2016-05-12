@@ -2,6 +2,7 @@
 const GRAVITY = 0.003;
 const WIDTH = 1280;
 const HEIGHT = 720;
+const SCALE = 3;
 
 (function () {
 
@@ -17,27 +18,26 @@ const HEIGHT = 720;
         preload: function (game) {
             game.load.image('tileset', 'assets/tileset.png');
             game.load.image('spritesheet', 'assets/spritesheet.png');
+            game.load.json('level-1', 'assets/maps/level-1.json');
         },
 
         onready: function (game) {
             this.keyboard = game.keyboard;
             this.player = createPlayer();
+            this.player.location.x = 100;
             this.player.image = game.load.images.get('spritesheet');
 
-            // Placeholder level
-            this.level = createLevel(game.load.images.get('tileset'), [
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  1,  1,  1,  1,  1,  0,  0,  0,  0,  0,  0],
+            this.camera = new Utility.Vector2(0, 0);
+            this.canvas_center = new Utility.Vector2(
+                (WIDTH * 0.5) / SCALE,
+                (HEIGHT * 0.5) / SCALE
+            );
 
-                [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0],
-                [ 0,  0,  0,  0,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0],
-                [33, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 34, 35],
-                [49, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 50, 51],
-            ]);
+            // Placeholder level
+            this.level = createLevel(
+                game.load.images.get('tileset'),
+                game.load.data.get('level-1')
+            );
         },
 
         update: function (dt, game) {
@@ -45,18 +45,25 @@ const HEIGHT = 720;
         },
 
         render: function (canvas) {
-            canvas.clear();
-            canvas.context.translate(4, 4);
-            this.level.render(canvas);
+
+            // Offset canvas so the player in centered.
+            var offset = this.player.location.copy().sub(this.canvas_center);
+            canvas.context.translate(this.camera.x - offset.x, this.camera.y - offset.y);
+            this.camera = offset.copy();
+
+            // Render elements.
+            canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
+            this.level.renderLayer(canvas, this.level.layers.background);
+            this.level.renderLayer(canvas, this.level.layers.middleground);
             canvas.drawSprite(this.player);
-            canvas.context.translate(-4, -4);
-            canvas.context.restore();
+            this.level.renderLayer(canvas, this.level.layers.foreground);
+            this.level.renderLayer(canvas, this.level.layers.collision);
         },
     });
 
     // Set up canvas.
     Utility.Game.canvas.create(WIDTH, HEIGHT, 'game-canvas');
-    Utility.Game.canvas.context.scale(0.5, 0.5);
+    Utility.Game.canvas.context.scale(SCALE, SCALE);
     Utility.Game.canvas.context['imageSmoothingEnabled'] = false;       /* standard */
     Utility.Game.canvas.context['mozImageSmoothingEnabled'] = false;    /* Firefox */
     Utility.Game.canvas.context['oImageSmoothingEnabled'] = false;      /* Opera */
