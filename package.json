@@ -1,0 +1,29 @@
+{
+  "name": "game-server",
+  "version": "0.0.1",
+  "description": "Backend game server for GameJAM",
+  "main": "/bin/www",
+  "scripts": {
+    "test": "test",
+    "start": "node --harmony ./bin/www"
+  },
+  "author": "Gregor Menih",
+  "license": "MIT",
+  "devDependencies": {
+    "nodemon": "^1.9.2"
+  },
+  "dependencies": {
+    "body-parser": "^1.15.1",
+    "connect-flash": "^0.1.1",
+    "connect-mongo": "^1.1.0",
+    "cookie-parser": "^1.4.1",
+    "cookie-session": "^2.0.0-alpha.1",
+    "express": "^4.13.4",
+    "express-handlebars": "^3.0.0",
+    "express-session": "^1.13.0",
+    "method-override": "^2.3.5",
+    "mongoose": "^4.4.16",
+    "passport": "^0.3.2",
+    "ws": "^1.1.0"
+  }
+}

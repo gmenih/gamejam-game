@@ -1,0 +1,7 @@
+let app = require('../app');
+
+let config = require('../config');
+
+let listener = app.listen(config.httpPort || 3000, () => {
+  console.log(`Server listening on ${listener.address().port}`);
+});
