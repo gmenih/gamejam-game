@@ -1,10 +1,10 @@
 
 // Place holder level.
 var createLevel = function (image, data) {
-    const tileWidth = 32;
-    const tileHeight = 32;
+    const tileWidth = 16; //data.tileheight;
+    const tileHeight = 16; //data.tilewidth;
     const tilesetWidth = 512 / tileWidth;
-    
+
     function getTileObj(t, levelX, levelY) {
         if (t === 0)
             return null;
@@ -17,7 +17,7 @@ var createLevel = function (image, data) {
             );
         return tile;
     }
-    
+
     var layer = function (w, h) {
         this.height = h;
         this.width = w;
@@ -50,7 +50,7 @@ var createLevel = function (image, data) {
         var x = 0, y = 0;
         var tmpArr = [];
         for (var j in currentLayer.data) {//each tile
-            var tileNum = currentLayer.data[j];    
+            var tileNum = currentLayer.data[j];
             var tile = getTileObj(tileNum, x, y);
             tmpArr.push(tile);
             x++;
@@ -64,29 +64,6 @@ var createLevel = function (image, data) {
 
         level.layers[currentLayer.name] = tmpLayerObj.tiles;
     }
-
-    // TMP
-    /*level.layers.collision = tiles.map(function (row, y) {
-        return row.map(function (id, x) {
-            if (id === 0) {
-                return null;
-            }
-
-            return getTile(
-
-                // Draw rect
-                new Utility.Rectangle(tile_width * x, tile_height * y, tile_width, tile_height),
-
-                // Src rect
-                new Utility.Rectangle(
-                    Math.round((id - 1) % tileset_width) * tile_width,
-                    Math.round((id - 1) / tileset_width) * tile_height,
-                    tile_width,
-                    tile_height
-                    )
-                );
-        });
-    });*/
 
     return level;
 };

@@ -2,7 +2,7 @@
 const GRAVITY = 0.003;
 const WIDTH = 1280;
 const HEIGHT = 720;
-const SCALE = 2;
+const SCALE = 3;
 
 (function () {
 
@@ -24,6 +24,7 @@ const SCALE = 2;
         onready: function (game) {
             this.keyboard = game.keyboard;
             this.player = createPlayer();
+            this.player.location.x = 100;
             this.player.image = game.load.images.get('spritesheet');
 
             this.camera = new Utility.Vector2(0, 0);
@@ -34,7 +35,7 @@ const SCALE = 2;
 
             // Placeholder level
             this.level = createLevel(
-                game.load.images.get('tileset'), 
+                game.load.images.get('tileset'),
                 game.load.data.get('level-1')
             );
         },
@@ -52,8 +53,11 @@ const SCALE = 2;
 
             // Render elements.
             canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
-            this.level.renderLayer(canvas, this.level.layers.collision);
+            this.level.renderLayer(canvas, this.level.layers.background);
+            this.level.renderLayer(canvas, this.level.layers.middleground);
             canvas.drawSprite(this.player);
+            this.level.renderLayer(canvas, this.level.layers.foreground);
+            this.level.renderLayer(canvas, this.level.layers.collision);
         },
     });
 
