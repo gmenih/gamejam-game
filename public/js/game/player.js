@@ -101,13 +101,15 @@ var createPlayer = function () {
         player.location.y += player.velocity.y * dt;
 
         // Send location
-        game.ws.send(JSON.stringify({
-            c: 'move',
-            d: {
-                location: player.location,
-                direction: 1
-            }
-        }));
+        if (player.connected) {
+            game.ws.send(JSON.stringify({
+                c: 'move',
+                d: {
+                    location: player.location,
+                    direction: 1
+                }
+            }));
+        }
     };
 
     return player;

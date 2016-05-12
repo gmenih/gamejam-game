@@ -39,6 +39,7 @@ const SCALE = 3;
                     if (data.hasOwnProperty('c')) {
                         switch(data.c) {
                             case 'start':
+                                master.player.connected = true;
                                 master.enemy_player = createPlayer();
                                 master.enemy_player.image = game.load.images.get('spritesheet');
                                 master.enemy_player.input = {
