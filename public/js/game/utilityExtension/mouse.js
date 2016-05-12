@@ -40,12 +40,14 @@
         
         // Get {x: , y: } and calculate angualar velocity to last mouse position
         getAngularVelocity(params) {
-            var x = params.x || 0;
-            var y = params.y || 0;
+            var x = params.X || 0;
+            var y = params.Y || 0;
             
-            var xDiff = this.x - x;
-            var yDiff = this.y - y;
-            return Math.atan2(xDiff, yDiff) * 180 / Math.PI;
+            var xDiff = this.X - x;
+            var yDiff = this.Y - y;
+            //return Math.atan2(xDiff, yDiff) * 180 / Math.PI;
+            var factor = 1 / Math.sqrt(Math.pow(xDiff, 2) + Math.pow(yDiff, 2));
+            return { x: xDiff * factor, y: yDiff * factor };
         }
     }
 
@@ -61,4 +63,4 @@
     // }
 
     Utility.Mouse = Mouse;
-}());
+}()); 
