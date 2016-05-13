@@ -4,10 +4,14 @@
       <h1>{{room.name}}</h1>
       <input type="hidden" id="gameId" value="{{ room._id }}">
     </div>
-  </div>  
+  </div>
 </div>
 <canvas id="gameCanvas" width="1280" height="720" style="border: 1px red dashed;"></canvas>
 <script src="/js/utility.min.js"></script>
+
+<script src="/js/game/states/connection_state.js"></script>
+<script src="/js/game/states/game_state.js"></script>
+
 <script src="/js/game/player.js"></script>
 <script src="/js/game/flag.js"></script>
 <script src="/js/game/level.js"></script>
