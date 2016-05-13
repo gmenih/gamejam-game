@@ -3,6 +3,9 @@ const GRAVITY = 0.003;
 const WIDTH = 1280;
 const HEIGHT = 720;
 const SCALE = 2;
+var PLAYER_1 = 52;
+var PLAYER_2 = 103;
+var FLAG = 256;
 
 (function () {
 
@@ -22,11 +25,25 @@ const SCALE = 2;
         },
 
         onready: function (game) {
-
             var master = this;
-             master.flag = createFlag();
-            console.log(master.flag);
-            master.flag.location = new Utility.Vector2(512, 576);
+            master.controlledPlayer = null;
+            master.flagHunter = null;
+            master.spawnPlayer1 = function (x, y) {
+                master.player1 = createPlayer(1);
+                master.player1.location = new Utility.Vector2(x, y);
+                master.player1.image = game.load.images.get('spritesheet');
+                master.players.push(master.player1);
+            }
+            master.spawnPlayer2 = function (x, y) {
+                master.player2 = createPlayer(2);
+                master.player2.location = new Utility.Vector2(x, y);
+                master.player2.image = game.load.images.get('spritesheet');
+                master.players.push(master.player2);
+            }
+            master.spawnBobi = function (x, y) {
+                master.flag = createFlag();
+                master.flag.location = new Utility.Vector2(x, y);
+            }
             // Connect to server
             var request_count = 0;
             var ws = getWebSocket({
@@ -44,33 +61,55 @@ const SCALE = 2;
                         }
 
                         request_count = data.d.index;
-
                         switch(data.c) {
                             case 'start':
-                                master.player.connected = true;
-                                master.enemy_player = createPlayer();
-                                master.enemy_player.image = master.player.image;
-                                master.enemy_player.input = {
+                                master.level.layers.spawn.forEach((row, $y)=> {
+                                    row.forEach((tile, $x) => {
+                                        if (tile) {
+                                            switch(tile.id) {
+                                                case PLAYER_1:
+                                                    master.spawnPlayer1($x * 16, $y * 16);
+                                                break;
+                                                case PLAYER_2:
+                                                    master.spawnPlayer2($x * 16, $y * 16);
+                                                break;
+                                                case FLAG:
+                                                    master.spawnBobi($x * 16, $y * 16);
+                                                break;
+                                            }
+                                        }
+                                    });
+                                });
+                                if (data.d === 'player1'){
+                                    master.controlledPlayer = master.player1;
+                                    master.flagHunter = master.player2;
+                                }
+                                else{
+                                    master.controlledPlayer = master.player2;
+                                    master.flagHunter = master.player1;
+                                }
+                                master.controlledPlayer.connected = true;
+                                master.flagHunter.image = master.controlledPlayer.image;
+                                master.flagHunter.input = {
                                     right: false,
                                     left: false,
                                     jump: false,
                                 };
-                                master.enemy_player.getInput = function (keyboard) {
-                                    return master.enemy_player.input;
+                                master.flagHunter.getInput = function (keyboard) {
+                                    return master.flagHunter.input;
                                 };
-                                master.enemy_player.sendInput = function () {
-                                    master.enemy_player.input.jump = false;
+                                master.flagHunter.sendInput = function () {
+                                    master.flagHunter.input.jump = false;
                                 }
-                                master.players.push(master.enemy_player);
                                 break;
                             case 'input':
-                                master.enemy_player.location.x = data.d.location.x;
-                                master.enemy_player.location.y = data.d.location.y;
-                                master.enemy_player.input = data.d.input;
+                                master.flagHunter.location.x = data.d.location.x;
+                                master.flagHunter.location.y = data.d.location.y;
+                                master.flagHunter.input = data.d.input;
                                 break;
                             case 'move':
-                                master.enemy_player.location.x = data.d.location.x;
-                                master.enemy_player.location.y = data.d.location.y;
+                                master.flagHunter.location.x = data.d.location.x;
+                                master.flagHunter.location.y = data.d.location.y;
                                 break;
                             default:
                                 console.log(data);
@@ -83,9 +122,6 @@ const SCALE = 2;
             this.ws = ws;
 
             this.keyboard = game.keyboard;
-            this.player = createPlayer();
-            this.player.location.x = 100;
-            this.player.image = game.load.images.get('spritesheet');
 
             this.camera = new Utility.Vector2(0, 0);
             this.canvas_center = new Utility.Vector2(
@@ -94,8 +130,6 @@ const SCALE = 2;
             );
 
             this.players = [];
-            this.players.push(this.player);
-
             // Placeholder level
             this.level = createLevel(
                 game.load.images.get('tileset'),
@@ -116,18 +150,22 @@ const SCALE = 2;
         render: function (canvas) {
 
             // Offset canvas so the player in centered.
-            var offset = this.player.location.copy().sub(this.canvas_center);
-            canvas.context.translate(this.camera.x - offset.x, this.camera.y - offset.y);
-            this.camera = offset.copy();
-
+            if (this.controlledPlayer){
+                var offset = this.controlledPlayer.location.copy().sub(this.canvas_center);
+                canvas.context.translate(this.camera.x - offset.x, this.camera.y - offset.y);
+                this.camera = offset.copy();
+                canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
+            } else {
+                canvas.clear();
+            }
             // Render elements.
-            canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
             this.level.renderLayer(canvas, this.level.layers.background);
             this.level.renderLayer(canvas, this.level.layers.middleground);
             this.players.forEach((player, $i) => {
                 canvas.drawSprite(player)
             });
-            canvas.drawRect(this.flag.getBounds(), 'red');
+            if (this.flag)
+                canvas.drawRect(this.flag.getBounds(), 'red');
             this.level.renderLayer(canvas, this.level.layers.foreground);
         },
     });

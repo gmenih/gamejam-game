@@ -1,40 +1,40 @@
-var createPlayer = function () {
+var createPlayer = function (i) {
     var player = new Utility.Sprite();
     player = Utility.Sprite.animatable(player);
     player.animation.add('run-right', {
         speed: 165,
         frames: [
-            new Utility.Rectangle(0, 32, 32, 32),
-            new Utility.Rectangle(32, 32, 32, 32),
-            new Utility.Rectangle(64, 32, 32, 32),
-            new Utility.Rectangle(96, 32, 32, 32),
-            new Utility.Rectangle(128, 32, 32, 32),
-            new Utility.Rectangle(160, 32, 32, 32),
+            new Utility.Rectangle(0, 32 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(32, 32 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(64, 32 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(96, 32 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(128, 32 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(160, 32 + (96 * (i - 1)), 32, 32),
         ]
     });
     player.animation.add('run-left', {
         speed: 165,
         frames: [
-            new Utility.Rectangle(0, 64, 32, 32),
-            new Utility.Rectangle(32, 64, 32, 32),
-            new Utility.Rectangle(64, 64, 32, 32),
-            new Utility.Rectangle(96, 64, 32, 32),
-            new Utility.Rectangle(128, 64, 32, 32),
-            new Utility.Rectangle(160, 64, 32, 32),
+            new Utility.Rectangle(0, 64 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(32, 64 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(64, 64 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(96, 64 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(128, 64 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(160, 64 + (96 * (i - 1)), 32, 32),
         ]
     });
     player.animation.add('idle-right', {
         speed: 300,
         frames: [
-            new Utility.Rectangle(0, 0, 32, 32),
-            new Utility.Rectangle(32, 0, 32, 32),
+            new Utility.Rectangle(0, 0 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(32, 0 + (96 * (i - 1)), 32, 32),
         ]
     });
     player.animation.add('idle-left', {
         speed: 300,
         frames: [
-            new Utility.Rectangle(64, 0, 32, 32),
-            new Utility.Rectangle(96, 0, 32, 32),
+            new Utility.Rectangle(64, 0 + (96 * (i - 1)), 32, 32),
+            new Utility.Rectangle(96, 0 + (96 * (i - 1)), 32, 32),
         ]
     })
     player.animation.play('run-right');
