@@ -6,7 +6,7 @@ var createPlayer = function () {
 
     player.location = new Utility.Vector2();
     player.velocity = new Utility.Vector2();
-    player.speed = 0.3;
+    player.speed = 0.15;
     player.jump_speed = -0.9;
     player.deacceleration = 0.8;
     player.on_ground = false;
@@ -47,11 +47,11 @@ var createPlayer = function () {
                     d: {
                         location: player.location,
                         input: input,
-                        input: player.request_count,
+                        index: player.request_count,
                     }
                 }));
                 player.request_count++;
-            } else if (player.last_send_elapsed > 300) {
+            } else if (player.last_send_elapsed > 100) {
                 player.last_send_elapsed = 0;
                 game.ws.send(JSON.stringify({
                     c: 'move',

@@ -47,6 +47,7 @@ const SCALE = 1;
                             case 'start':
                                 master.player.connected = true;
                                 master.enemy_player = createPlayer();
+                                // master.enemy_player.update = function () {}
                                 master.enemy_player.image = game.load.images.get('spritesheet');
                                 master.enemy_player.input = {
                                     right: false,
@@ -69,10 +70,8 @@ const SCALE = 1;
                                 master.enemy_player.input = data.d.input;
                                 break;
                             case 'move':
-                                if (data.d.index > request_count) {
-                                    master.enemy_player.location.x = data.d.location.x;
-                                    master.enemy_player.location.y = data.d.location.y;
-                                }
+                                master.enemy_player.location.x = data.d.location.x;
+                                master.enemy_player.location.y = data.d.location.y;
                                 break;
                             default:
                                 console.log(data);
