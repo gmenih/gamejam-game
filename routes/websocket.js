@@ -134,23 +134,23 @@ let commands = {
       this.send(JSON.stringify({c:'error', d: 'No location'}));
     }
   },
-  playerPickFlag: function() {
+  playerPickFlag: function(data) {
     let playerId = rplayers.get(this);
     Room.loadEnemyPlayer(playerId, (err, enemyId) => {
       if (!err && enemyId) {
         let client = players.get(enemyId);
-        client.send(JSON.stringify({c: 'pickup', d: null}));
+        client.send(JSON.stringify({c: 'pickup', d: data}));
       } else {
         this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
       }
     });
   },
-  playerWin: function() {
+  playerWin: function(data) {
     let playerId = rplayers.get(this);
     Room.loadEnemyPlayer(playerId, (err, enemyId) => {
       if (!err && enemyId) {
         let client = players.get(enemyId);
-        client.send(JSON.stringify({c: 'win', d: null}));
+        client.send(JSON.stringify({c: 'win', d: data}));
       } else {
         this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
       }

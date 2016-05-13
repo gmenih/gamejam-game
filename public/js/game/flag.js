@@ -2,8 +2,7 @@ var createFlag = function() {
   var flag = new Utility.Sprite();
   flag = Utility.Sprite.animatable(flag);
   flag.size = new Utility.Vector2(32, 64);
-  flag.location = new Utility.Vector2();
-  flag.onPlayer = false;
+  flag.direction = 0;  // 0 levo, 1 = desno
   flag.animation.add('hover', {
     speed: 310,
     frames: [
