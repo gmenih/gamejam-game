@@ -97,7 +97,6 @@ const SCALE = 2;
             this.players = [];
             this.players.push(this.player);
 
-            // Placeholder level
             this.level = createLevel(
                 game.load.images.get('tileset'),
                 game.load.data.get('level-1')

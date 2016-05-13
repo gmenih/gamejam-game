@@ -1,3 +1,6 @@
+var PLAYER_1 = 52;
+var PLAYER_2 = 103;
+var FLAG = 256;
 
 // Place holder level.
 var createLevel = function (image, data) {
