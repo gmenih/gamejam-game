@@ -37,6 +37,18 @@ var createPlayer = function (i) {
             new Utility.Rectangle(96, 0 + (96 * (i - 1)), 32, 32),
         ]
     })
+    player.animation.add('falling-right', {
+        speed: 200,
+        frames: [
+            new Utility.Rectangle(128, 0 + (96 * (i - 1), 32, 32)
+        ]
+    });
+    player.animation.add('falling-left', {
+        speed: 200,
+        frames: [
+            new Utility.Rectangle(160, (96 * (i - 1), 32, 32)
+        ]
+    });
     player.animation.play('run-right');
     player.idle_animation = 'idle-right';
 
@@ -192,6 +204,11 @@ var createPlayer = function (i) {
         // Apply velocity.
         player.location.x += player.velocity.x * dt;
         player.location.y += player.velocity.y * dt;
+
+        // Update falling animation.
+        if (Math.abs(player.velocity.y) > 0.5) {
+            player.animation.play('falling-' + player.velocity.x > 0 ? 'right' : 'left');
+        }
 
         // Update animation.
         player.animation.update(dt);
