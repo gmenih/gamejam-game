@@ -40,9 +40,9 @@ var createPlayer = function (i) {
     player.animation.play('run-right');
     player.idle_animation = 'idle-right';
 
+    player.name = 'player' + i;
 
     player.size.set(32);
-
     player.location = new Utility.Vector2();
     player.velocity = new Utility.Vector2();
     player.speed = 0.15;
