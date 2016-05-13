@@ -24,6 +24,10 @@ Utility.Game.addState('game', {
             game.load.images.get('tileset'),
             game.load.data.get('level-1')
         );
+
+        this.background = new Utility.Sprite();
+        this.background.image = game.load.images.get('tileset');
+        this.background.src_rect = new Utility.Rectangle(0, 155, 450, 350);
     },
 
     update: function (dt, game) {
@@ -57,8 +61,11 @@ Utility.Game.addState('game', {
         this.camera = offset.copy();
         canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
 
+        // Offset background.
+        this.background.location = offset.copy();
+
         // Render elements.
-        this.level.renderLayer(canvas, this.level.layers.background);
+        this.canvas.drawSprite(this.background);
         this.level.renderLayer(canvas, this.level.layers.middleground);
         canvas.drawSprite(this.red_goal);
         canvas.drawSprite(this.blue_goal);
@@ -189,7 +196,7 @@ Utility.Game.addState('game', {
         this.red_goal.location = new Utility.Vector2(x, y - 16);
         this.red_goal.image = this.spritesheet;
         console.log(this.red_goal);
-    }, 
+    },
 
     spawnBlueGoal: function (x, y) {
         this.blue_goal = createGoal(2);
