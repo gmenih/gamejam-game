@@ -37,6 +37,12 @@ const SCALE = 1;
                         return;
                     }
                     if (data.hasOwnProperty('c')) {
+                        if (data.d.index < request_count) {
+                            return 0;
+                        }
+
+                        request_count = data.d.index;
+
                         switch(data.c) {
                             case 'start':
                                 master.player.connected = true;
@@ -66,7 +72,6 @@ const SCALE = 1;
                                 if (data.d.index > request_count) {
                                     master.enemy_player.location.x = data.d.location.x;
                                     master.enemy_player.location.y = data.d.location.y;
-                                    request_count = data.d.index;
                                 }
                                 break;
                             default:

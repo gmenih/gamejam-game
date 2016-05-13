@@ -46,10 +46,12 @@ var createPlayer = function () {
                     c: 'input',
                     d: {
                         location: player.location,
-                        input: input
+                        input: input,
+                        input: player.request_count,
                     }
                 }));
-            } else if (player.last_send_elapsed > 1000) {
+                player.request_count++;
+            } else if (player.last_send_elapsed > 300) {
                 player.last_send_elapsed = 0;
                 game.ws.send(JSON.stringify({
                     c: 'move',
