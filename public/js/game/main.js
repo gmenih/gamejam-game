@@ -50,8 +50,11 @@ const SCALE = 1;
                                 master.enemy_player.getInput = function (keyboard) {
                                     return master.enemy_player.input;
                                 };
+
                                 // master.enemy_player.update = function () {}
-                                master.enemy_player.sendInput = function () {}
+                                master.enemy_player.sendInput = function () {
+                                    master.enemy_player.input.jump = false;
+                                }
                                 master.players.push(master.enemy_player);
                                 break;
                             case 'input':
