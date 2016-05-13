@@ -8,13 +8,13 @@ var createLevel = function (image, data) {
     const tilesetWidth = Math.floor(512 / tileWidth);
 
     function getTileObj(id, levelX, levelY) {
-        if (t === 0)
+        if (id === 0)
             return null;
         var tile = new Utility.Rectangle(levelX * 16, levelY * 16, 16, 16);
         tile.id = id;
         tile.src_rect = new Utility.Rectangle(
-            Math.round((t - 1) % tilesetWidth) * tileWidth,
-            Math.round((t - 1) / tilesetWidth) * tileHeight,
+            Math.round((id - 1) % tilesetWidth) * tileWidth,
+            Math.round((id - 1) / tilesetWidth) * tileHeight,
             tileWidth,
             tileHeight
             );
