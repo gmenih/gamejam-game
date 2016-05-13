@@ -1,7 +1,7 @@
 // CONST VALUES
 const GRAVITY = 0.003;
-const WIDTH = 1280;
-const HEIGHT = 720;
+const WIDTH = 800;
+const HEIGHT = 600;
 const SCALE = 2;
 var PLAYER_1 = 52;
 var PLAYER_2 = 103;

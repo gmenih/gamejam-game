@@ -143,8 +143,10 @@ Utility.Game.addState('game', {
                     master.flagHunter.location.y = data.d.location.y;
                     break;
                 case 'pickup':
+                    master.controlledPlayer.flag = null;
                     master.flagHunter.flag = master.flag;
                     master.flag.location = master.flagHunter.location;
+                    break;
                 default:
                     console.log(data);
                     break;
