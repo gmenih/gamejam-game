@@ -112,9 +112,9 @@ const SCALE = 1;
             canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
             this.level.renderLayer(canvas, this.level.layers.background);
             this.level.renderLayer(canvas, this.level.layers.middleground);
-            this.players.forEach((player) => {
+            this.players.forEach((player, $i) => {
                 // canvas.drawSprite(this.player)
-                canvas.drawRect(player.getBounds(), 'red');
+                canvas.drawRect(player.getBounds(), ['red', 'green'][$i]);
             });
             this.level.renderLayer(canvas, this.level.layers.foreground);
             this.level.renderLayer(canvas, this.level.layers.foreground);

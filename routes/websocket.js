@@ -66,6 +66,7 @@ let commands = {
     if (data.hasOwnProperty('location') && data.hasOwnProperty('input')) {
       Room.loadEnemyPlayer(playerId, (err, enemyId) => {
         if (!err && enemyId) {
+          console.timeEnd('request');
           let client = players.get(enemyId);
           client.send(JSON.stringify({c: 'input', d: data}));
         } else {
@@ -179,6 +180,7 @@ function handleMessage (msg) {
     console.error(ex);
     return;
   }
+  console.time('request');
   if (m.hasOwnProperty('c')) {
     switch(m.c) {
       case 'connect':

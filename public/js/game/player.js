@@ -39,7 +39,7 @@ var createPlayer = function () {
         ));
     };
 
-    player.sendInput = function (input, game) {
+    player.sendInput = function (input, game, dt) {
         if (player.connected) {
             if (JSON.stringify(player.pass_input) !== JSON.stringify(input)) {
                 game.ws.send(JSON.stringify({
