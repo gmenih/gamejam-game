@@ -59,8 +59,9 @@ const SCALE = 2;
                                 master.enemy_player.sendInput = function () {
                                     master.enemy_player.input.jump = false;
                                 }
-                                console.log(master.enemy_player);
-                                console.log(master.player);
+                                master.flag = createFlag();
+                                console.log(master.flag);
+                                master.flag.location = new Utility.Vector2(512, (512 + 256));
                                 master.players.push(master.enemy_player);
                                 break;
                             case 'input':
@@ -121,6 +122,9 @@ const SCALE = 2;
             this.players.forEach((player, $i) => {
                 canvas.drawSprite(player)
             });
+            if (this.player.connected){
+                canvas.drawRect(this.flag.getBounds(), 'red');
+            }
             this.level.renderLayer(canvas, this.level.layers.foreground);
         },
     });

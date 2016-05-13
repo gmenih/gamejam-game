@@ -1,9 +1,9 @@
 
 // Place holder level.
 var createLevel = function (image, data) {
-    const tileWidth = 16; //data.tileheight;
-    const tileHeight = 16; //data.tilewidth;
-    const tilesetWidth = 512 / tileWidth;
+    const tileWidth = 10; //data.tileheight;
+    const tileHeight = 10; //data.tilewidth;
+    const tilesetWidth = Math.floor(512 / tileWidth);
 
     function getTileObj(t, levelX, levelY) {
         if (t === 0)
