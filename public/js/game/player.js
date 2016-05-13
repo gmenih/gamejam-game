@@ -2,7 +2,7 @@ var createPlayer = function () {
     var player = new Utility.Sprite();
     player = Utility.Sprite.animatable(player);
     player.animation.add('run-right', {
-        speed: 16,
+        speed: 165,
         frames: [
             new Utility.Rectangle(0, 32, 32, 32),
             new Utility.Rectangle(32, 32, 32, 32),
@@ -13,7 +13,7 @@ var createPlayer = function () {
         ]
     });
     player.animation.add('run-left', {
-        speed: 16,
+        speed: 165,
         frames: [
             new Utility.Rectangle(0, 64, 32, 32),
             new Utility.Rectangle(32, 64, 32, 32),
@@ -24,13 +24,21 @@ var createPlayer = function () {
         ]
     });
     player.animation.add('idle-right', {
-        speed: 100,
+        speed: 300,
         frames: [
             new Utility.Rectangle(0, 0, 32, 32),
             new Utility.Rectangle(32, 0, 32, 32),
         ]
+    });
+    player.animation.add('idle-left', {
+        speed: 300,
+        frames: [
+            new Utility.Rectangle(64, 0, 32, 32),
+            new Utility.Rectangle(96, 0, 32, 32),
+        ]
     })
     player.animation.play('run-right');
+    player.idle_animation = 'idle-right';
 
 
     player.size.set(32);
@@ -113,12 +121,14 @@ var createPlayer = function () {
         if (input.right) {
             player.velocity.x = player.speed;
             player.animation.play('run-right');
+            player.idle_animation = 'idle-right';
         } else if (input.left) {
             player.velocity.x = -player.speed;
             player.animation.play('run-left');
+            player.idle_animation = 'idle-left';
         } else {
             player.velocity.x = player.velocity.x * player.deacceleration;
-            player.animation.play('idle-right');
+            player.animation.play(player.idle_animation);
         }
 
         // Jump.
