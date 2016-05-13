@@ -12,6 +12,24 @@ var createPlayer = function () {
             new Utility.Rectangle(160, 32, 32, 32),
         ]
     });
+    player.animation.add('run-left', {
+        speed: 64,
+        frames: [
+            new Utility.Rectangle(0, 64, 32, 32),
+            new Utility.Rectangle(32, 64, 32, 32),
+            new Utility.Rectangle(64, 64, 32, 32),
+            new Utility.Rectangle(96, 64, 32, 32),
+            new Utility.Rectangle(128, 64, 32, 32),
+            new Utility.Rectangle(160, 64, 32, 32),
+        ]
+    });
+    player.animation.add('idle-right', {
+        speed: 100,
+        frames: [
+            new Utility.Rectangle(0, 0, 32, 32),
+            new Utility.Rectangle(32, 0, 32, 32),
+        ]
+    })
     player.animation.play('run-right');
 
 
@@ -96,11 +114,14 @@ var createPlayer = function () {
         if (input.right) {
             player.velocity.x = player.speed;
             player.src_rect.x = 32;
+            player.animation.play('run-right');
         } else if (input.left) {
             player.velocity.x = -player.speed;
             player.src_rect.x = 0;
+            player.animation.play('run-left');
         } else {
             player.velocity.x = player.velocity.x * player.deacceleration;
+            player.animation.play('run-idle');
         }
 
         // Jump.
