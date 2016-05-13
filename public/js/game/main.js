@@ -2,7 +2,7 @@
 const GRAVITY = 0.003;
 const WIDTH = 1280;
 const HEIGHT = 720;
-const SCALE = 1;
+const SCALE = 2;
 
 (function () {
 

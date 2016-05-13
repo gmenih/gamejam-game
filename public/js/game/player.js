@@ -2,7 +2,7 @@ var createPlayer = function () {
     var player = new Utility.Sprite();
     player = Utility.Sprite.animatable(player);
     player.animation.add('run-right', {
-        speed: 64,
+        speed: 16,
         frames: [
             new Utility.Rectangle(0, 32, 32, 32),
             new Utility.Rectangle(32, 32, 32, 32),
@@ -13,7 +13,7 @@ var createPlayer = function () {
         ]
     });
     player.animation.add('run-left', {
-        speed: 64,
+        speed: 16,
         frames: [
             new Utility.Rectangle(0, 64, 32, 32),
             new Utility.Rectangle(32, 64, 32, 32),
@@ -121,7 +121,7 @@ var createPlayer = function () {
             player.animation.play('run-left');
         } else {
             player.velocity.x = player.velocity.x * player.deacceleration;
-            player.animation.play('run-idle');
+            player.animation.play('idle-right');
         }
 
         // Jump.
