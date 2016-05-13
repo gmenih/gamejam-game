@@ -26,6 +26,7 @@ const SCALE = 1;
             var master = this;
 
             // Connect to server
+            var request_count = 0;
             var ws = getWebSocket({
                 onmessage: function (msg) {
                     var data;
@@ -59,8 +60,11 @@ const SCALE = 1;
                                 master.enemy_player.input = data.d.input;
                                 break;
                             case 'move':
-                                master.enemy_player.location.x = data.d.location.x;
-                                master.enemy_player.location.y = data.d.location.y;
+                                if (data.d.index > request_count) {
+                                    master.enemy_player.location.x = data.d.location.x;
+                                    master.enemy_player.location.y = data.d.location.y;
+                                    request_count = data.d.index;
+                                }
                                 break;
                             default:
                                 console.log(data);

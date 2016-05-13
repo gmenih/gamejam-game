@@ -11,6 +11,7 @@ var createPlayer = function () {
     player.deacceleration = 0.8;
     player.on_ground = false;
     player.last_send_elapsed = 0;
+    player.request_count = 0;
 
     player.getInput = function (keyboard) {
         return {
@@ -55,8 +56,11 @@ var createPlayer = function () {
                     d: {
                         location: player.location,
                         direction: 1,
+                        index: player.request_count,
                     }
                 }));
+
+                player.request_count++;
             }
 
             player.last_send_elapsed += dt;
