@@ -40,13 +40,13 @@ var createPlayer = function (i) {
     player.animation.add('falling-right', {
         speed: 200,
         frames: [
-            new Utility.Rectangle(128, 0 + (96 * (i - 1), 32, 32)
+            new Utility.Rectangle(128, (96 * (i - 1)), 32, 32)
         ]
     });
     player.animation.add('falling-left', {
         speed: 200,
         frames: [
-            new Utility.Rectangle(160, (96 * (i - 1), 32, 32)
+            new Utility.Rectangle(160, (96 * (i - 1)), 32, 32)
         ]
     });
     player.animation.play('run-right');
