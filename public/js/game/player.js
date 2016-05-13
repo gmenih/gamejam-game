@@ -34,7 +34,6 @@ var createPlayer = function () {
 
 
     player.size.set(32);
-    player.src_rect = new Utility.Rectangle(0, 0, 32, 32);
 
     player.location = new Utility.Vector2();
     player.velocity = new Utility.Vector2();
@@ -113,11 +112,9 @@ var createPlayer = function () {
         // Move left and right.
         if (input.right) {
             player.velocity.x = player.speed;
-            player.src_rect.x = 32;
             player.animation.play('run-right');
         } else if (input.left) {
             player.velocity.x = -player.speed;
-            player.src_rect.x = 0;
             player.animation.play('run-left');
         } else {
             player.velocity.x = player.velocity.x * player.deacceleration;
