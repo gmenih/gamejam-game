@@ -28,6 +28,7 @@ Utility.Game.addState('game', {
         this.background = new Utility.Sprite();
         this.background.image = game.load.images.get('tileset');
         this.background.src_rect = new Utility.Rectangle(0, 155, 450, 350);
+        this.background.size = new Utility.Vector2(640, 340);
     },
 
     update: function (dt, game) {
@@ -59,7 +60,7 @@ Utility.Game.addState('game', {
         this.background.location = offset.copy();
 
         // Render elements.
-        this.canvas.drawSprite(this.background);
+        canvas.drawSprite(this.background);
         this.level.renderLayer(canvas, this.level.layers.middleground);
         canvas.drawSprite(this.red_goal);
         canvas.drawSprite(this.blue_goal);
