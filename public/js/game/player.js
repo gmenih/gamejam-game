@@ -2,7 +2,7 @@ var createPlayer = function () {
     var player = new Utility.Sprite();
     player = Utility.Sprite.animatable(player);
     player.animation.add('run-right', {
-        speed: 120,
+        speed: 64,
         frames: [
             new Utility.Rectangle(0, 32, 32, 32),
             new Utility.Rectangle(32, 32, 32, 32),
@@ -12,7 +12,7 @@ var createPlayer = function () {
             new Utility.Rectangle(160, 32, 32, 32),
         ]
     });
-    player.play('run-right');
+    player.animation.play('run-right');
 
 
     player.size.set(32);
