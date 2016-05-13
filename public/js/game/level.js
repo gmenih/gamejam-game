@@ -7,10 +7,11 @@ var createLevel = function (image, data) {
     const tileHeight = 10; //data.tilewidth;
     const tilesetWidth = Math.floor(512 / tileWidth);
 
-    function getTileObj(t, levelX, levelY) {
+    function getTileObj(id, levelX, levelY) {
         if (t === 0)
             return null;
         var tile = new Utility.Rectangle(levelX * 16, levelY * 16, 16, 16);
+        tile.id = id;
         tile.src_rect = new Utility.Rectangle(
             Math.round((t - 1) % tilesetWidth) * tileWidth,
             Math.round((t - 1) / tilesetWidth) * tileHeight,
@@ -44,7 +45,6 @@ var createLevel = function (image, data) {
             });
         },
     };
-
 
     for (var i in data.layers) {//each layer
         var currentLayer = data.layers[i];
