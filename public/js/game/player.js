@@ -1,5 +1,19 @@
 var createPlayer = function () {
     var player = new Utility.Sprite();
+    player = Utility.Sprite.animatable(player);
+    player.animation.add('run-right', {
+        speed: 120,
+        frames: [
+            new Utility.Rectangle(0, 32, 32, 32),
+            new Utility.Rectangle(32, 32, 32, 32),
+            new Utility.Rectangle(64, 32, 32, 32),
+            new Utility.Rectangle(96, 32, 32, 32),
+            new Utility.Rectangle(128, 32, 32, 32),
+            new Utility.Rectangle(160, 32, 32, 32),
+        ]
+    });
+    player.play('run-right');
+
 
     player.size.set(32);
     player.src_rect = new Utility.Rectangle(0, 0, 32, 32);
@@ -135,6 +149,9 @@ var createPlayer = function () {
         // Apply velocity.
         player.location.x += player.velocity.x * dt;
         player.location.y += player.velocity.y * dt;
+
+        // Update animation.
+        player.animation.update(dt);
     };
 
     return player;
