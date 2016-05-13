@@ -121,6 +121,9 @@ var GOAL_RED = 154;
                                 master.flagHunter.location.x = data.d.location.x;
                                 master.flagHunter.location.y = data.d.location.y;
                                 break;
+                            case 'pickup':
+                                master.flagHunter.flag = master.flag;
+                                master.flag.location = master.flagHunter.location;
                             default:
                                 console.log(data);
                                 break;
@@ -153,14 +156,20 @@ var GOAL_RED = 154;
             this.players.forEach((player) => {
                 player.update(dt, this);
                 if (player.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
-                    this.flag.onPlayer = true;
-                    this.flag.location = player.location;
-                    if (player.name === 'player1')
+                    if (player.name === 'player1'){
                         this.flag.animation.play('red-holding');
-                    else
+                    }
+                    else{
                         this.flag.animation.play('blue-holding');
+                    }
+                    if (player.name === this.controlledPlayer.name){
+                        this.flag.location = this.controlledPlayer.location;
+                        this.controlledPlayer.flag = this.flag;
+                        this.ws.send(JSON.stringify({c: 'pickup', d: {index: this.controlledPlayer.request_count}}));
+                        this.controlledPlayer.request_count++;
+                    }
                     this.flag.size = new Utility.Vector2(32, 32);
-                    this.flag.anchor = new Utility.Vector2(0, 0);
+                    
                 }
             });
         },

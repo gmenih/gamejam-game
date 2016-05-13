@@ -41,6 +41,7 @@ var createPlayer = function (i) {
     player.idle_animation = 'idle-right';
 
     player.name = 'player' + i;
+    player.flag = null;
 
     player.size.set(32);
     player.location = new Utility.Vector2();
@@ -122,10 +123,16 @@ var createPlayer = function (i) {
             player.velocity.x = player.speed;
             player.animation.play('run-right');
             player.idle_animation = 'idle-right';
+            if (player.flag){
+                player.flag.anchor = new Utility.Vector2(.2, .4);
+            }
         } else if (input.left) {
             player.velocity.x = -player.speed;
             player.animation.play('run-left');
             player.idle_animation = 'idle-left';
+            if (player.flag){
+                player.flag.anchor = new Utility.Vector2(-.2, .4);
+            }
         } else {
             player.velocity.x = player.velocity.x * player.deacceleration;
             player.animation.play(player.idle_animation);
