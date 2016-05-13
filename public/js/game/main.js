@@ -6,6 +6,8 @@ const SCALE = 2;
 var PLAYER_1 = 52;
 var PLAYER_2 = 103;
 var FLAG = 256;
+var GOAL_BLUE = 205;
+var GOAL_RED = 154;
 
 (function () {
 
@@ -42,7 +44,15 @@ var FLAG = 256;
             }
             master.spawnBobi = function (x, y) {
                 master.flag = createFlag();
-                master.flag.location = new Utility.Vector2(x, y);
+                master.flag.location = new Utility.Vector2(x - 16, y - 37);
+                master.flag.image = game.load.images.get('spritesheet');
+                master.flag.anchor = new Utility.Vector2(0, 0);
+            }
+            master.spawnRedGoal = function (x, y) {
+
+            }
+            master.spawnBlueGol = function (x, y) {
+
             }
             // Connect to server
             var request_count = 0;
@@ -138,11 +148,19 @@ var FLAG = 256;
         },
 
         update: function (dt, game) {
+            if (this.flag)
+                this.flag.animation.update(dt);
             this.players.forEach((player) => {
                 player.update(dt, this);
                 if (player.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
                     this.flag.onPlayer = true;
                     this.flag.location = player.location;
+                    if (player.name === 'player1')
+                        this.flag.animation.play('red-holding');
+                    else
+                        this.flag.animation.play('blue-holding');
+                    this.flag.size = new Utility.Vector2(32, 32);
+                    this.flag.anchor = new Utility.Vector2(0, 0);
                 }
             });
         },
@@ -165,7 +183,7 @@ var FLAG = 256;
                 canvas.drawSprite(player)
             });
             if (this.flag)
-                canvas.drawRect(this.flag.getBounds(), 'red');
+                canvas.drawSprite(this.flag);
             this.level.renderLayer(canvas, this.level.layers.foreground);
         },
     });
