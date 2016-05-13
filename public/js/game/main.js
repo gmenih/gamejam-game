@@ -24,7 +24,9 @@ const SCALE = 2;
         onready: function (game) {
 
             var master = this;
-
+             master.flag = createFlag();
+            console.log(master.flag);
+            master.flag.location = new Utility.Vector2(512, 576);
             // Connect to server
             var request_count = 0;
             var ws = getWebSocket({
@@ -59,9 +61,6 @@ const SCALE = 2;
                                 master.enemy_player.sendInput = function () {
                                     master.enemy_player.input.jump = false;
                                 }
-                                master.flag = createFlag();
-                                console.log(master.flag);
-                                master.flag.location = new Utility.Vector2(512, (512 + 256));
                                 master.players.push(master.enemy_player);
                                 break;
                             case 'input':
@@ -97,6 +96,7 @@ const SCALE = 2;
             this.players = [];
             this.players.push(this.player);
 
+            // Placeholder level
             this.level = createLevel(
                 game.load.images.get('tileset'),
                 game.load.data.get('level-1')
@@ -104,7 +104,13 @@ const SCALE = 2;
         },
 
         update: function (dt, game) {
-            this.players.forEach(player => player.update(dt, this));
+            this.players.forEach((player) => {
+                player.update(dt, this);
+                if (player.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
+                    this.flag.onPlayer = true;
+                    this.flag.location = player.location;
+                }
+            });
         },
 
         render: function (canvas) {
@@ -121,9 +127,7 @@ const SCALE = 2;
             this.players.forEach((player, $i) => {
                 canvas.drawSprite(player)
             });
-            if (this.player.connected){
-                canvas.drawRect(this.flag.getBounds(), 'red');
-            }
+            canvas.drawRect(this.flag.getBounds(), 'red');
             this.level.renderLayer(canvas, this.level.layers.foreground);
         },
     });

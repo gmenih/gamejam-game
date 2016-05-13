@@ -1,7 +1,6 @@
 var PLAYER_1 = 52;
 var PLAYER_2 = 103;
 var FLAG = 256;
-
 // Place holder level.
 var createLevel = function (image, data) {
     const tileWidth = 10; //data.tileheight;
@@ -11,7 +10,7 @@ var createLevel = function (image, data) {
     function getTileObj(t, levelX, levelY) {
         if (t === 0)
             return null;
-        var tile = new Utility.Rectangle(levelX * tileWidth, levelY * tileHeight, tileWidth, tileHeight);
+        var tile = new Utility.Rectangle(levelX * 16, levelY * 16, 16, 16);
         tile.src_rect = new Utility.Rectangle(
             Math.round((t - 1) % tilesetWidth) * tileWidth,
             Math.round((t - 1) / tilesetWidth) * tileHeight,

@@ -1,10 +1,12 @@
-<div class="row">
-  <div class="col-md-12">
-    <h1>{{room.name}}</h1>
-    <input type="hidden" id="gameId" value="{{ room._id }}">
-  </div>
+<div class="container">
+  <div class="row">
+    <div class="col-md-12">
+      <h1>{{room.name}}</h1>
+      <input type="hidden" id="gameId" value="{{ room._id }}">
+    </div>
+  </div>  
 </div>
-<canvas id="gameCanvas" width="1280" height="720"></canvas>
+<canvas id="gameCanvas" width="1280" height="720" style="border: 1px red dashed;"></canvas>
 <script src="/js/utility.min.js"></script>
 <script src="/js/game/player.js"></script>
 <script src="/js/game/flag.js"></script>
