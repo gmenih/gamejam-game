@@ -1,9 +1,11 @@
 Utility.Game.addState('connecting', {
 
     onready: function (game) {
-
+        
         var ws = getWebSocket({
-            onmessage: function () {}
+            onmessage: function (msg) {
+                console.log(msg);
+            }
         });
 
         ws.onmessage = function (msg) {
@@ -19,6 +21,8 @@ Utility.Game.addState('connecting', {
             if (!data.hasOwnProperty('c')) {
                 return 0;
             }
+
+            console.log(data);
 
             switch (data.c) {
                 case 'start':

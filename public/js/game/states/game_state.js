@@ -7,7 +7,7 @@ Utility.Game.addState('game', {
     },
 
     onready: function (game) {
-
+        this.spritesheet = game.load.images.get('spritesheet');
         this.keyboard = game.keyboard;
 
         this.camera = new Utility.Vector2(0, 0);
@@ -27,49 +27,50 @@ Utility.Game.addState('game', {
     },
 
     update: function (dt, game) {
-            this.flag.animation.update(dt);
-            this.players.forEach((player) => {
-                player.update(dt, this);
-                if (player.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
-                    if (player.name === 'player1'){
-                        this.flag.animation.play('red-holding');
-                    }
-                    else{
-                        this.flag.animation.play('blue-holding');
-                    }
-                    if (player.name === this.controlledPlayer.name){
-                        this.flag.location = this.controlledPlayer.location;
-                        this.controlledPlayer.flag = this.flag;
-                        this.ws.send(JSON.stringify({c: 'pickup', d: {index: this.controlledPlayer.request_count}}));
-                        this.controlledPlayer.request_count++;
-                    }
-                    this.flag.size = new Utility.Vector2(32, 32);
-
+        this.flag.animation.update(dt);
+        this.players.forEach((player) => {
+            player.update(dt, this);
+            if (player.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
+                if (player.name === 'player1'){
+                    this.flag.animation.play('red-holding');
                 }
-            });
-        },
+                else{
+                    this.flag.animation.play('blue-holding');
+                }
+                if (player.name === this.controlledPlayer.name){
+                    this.flag.location = this.controlledPlayer.location;
+                    this.controlledPlayer.flag = this.flag;
+                    this.ws.send(JSON.stringify({c: 'pickup', d: {index: this.controlledPlayer.request_count}}));
+                    this.controlledPlayer.request_count++;
+                }
+                this.flag.size = new Utility.Vector2(32, 32);
 
-        render: function (canvas) {
+            }
+        });
+    },
 
-            // Offset canvas so the player in centered.
-            var offset = this.controlledPlayer.location.copy().sub(this.canvas_center);
-            canvas.context.translate(this.camera.x - offset.x, this.camera.y - offset.y);
-            this.camera = offset.copy();
-            canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
+    render: function (canvas) {
 
-            // Render elements.
-            this.level.renderLayer(canvas, this.level.layers.background);
-            this.level.renderLayer(canvas, this.level.layers.middleground);
-            this.players.forEach((player, $i) => {
-                canvas.drawSprite(player)
-            });
+        // Offset canvas so the player in centered.
+        var offset = this.controlledPlayer.location.copy().sub(this.canvas_center);
+        canvas.context.translate(this.camera.x - offset.x, this.camera.y - offset.y);
+        this.camera = offset.copy();
+        canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
 
-            canvas.drawSprite(this.flag);
-            this.level.renderLayer(canvas, this.level.layers.foreground);
-        },
+        // Render elements.
+        this.level.renderLayer(canvas, this.level.layers.background);
+        this.level.renderLayer(canvas, this.level.layers.middleground);
+        canvas.drawSprite(this.flag);
+        this.players.forEach((player, $i) => {
+            canvas.drawSprite(player)
+        });
+        this.level.renderLayer(canvas, this.level.layers.foreground);
+    },
 
     onplayerconnect: function (ws, data) {
         var master = this;
+        master.ws = ws;
+
         master.level.layers.spawn.forEach((row, $y)=> {
             row.forEach((tile, $x) => {
                 if (tile) {
@@ -116,6 +117,8 @@ Utility.Game.addState('game', {
     bindSocket: function (ws) {
         var request_count = 0;
 
+        var master = this;
+
         ws.onmessage = function (msg) {
             try {
                 var data = JSON.parse(msg.data);
@@ -153,21 +156,21 @@ Utility.Game.addState('game', {
     spawnPlayer1: function (x, y) {
         this.player1 = createPlayer(1);
         this.player1.location = new Utility.Vector2(x, y);
-        this.player1.image = game.load.images.get('spritesheet');
+        this.player1.image = this.spritesheet;
         this.players.push(this.player1);
     },
 
     spawnPlayer2: function (x, y) {
         this.player2 = createPlayer(2);
         this.player2.location = new Utility.Vector2(x, y);
-        this.player2.image = game.load.images.get('spritesheet');
+        this.player2.image = this.spritesheet;
         this.players.push(this.player2);
     },
 
     spawnBobi: function (x, y) {
         this.flag = createFlag();
         this.flag.location = new Utility.Vector2(x - 16, y - 37);
-        this.flag.image = game.load.images.get('spritesheet');
+        this.flag.image = this.spritesheet;
         this.flag.anchor = new Utility.Vector2(0, 0);
     },
 

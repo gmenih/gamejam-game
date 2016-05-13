@@ -4,7 +4,7 @@ var getWebSocket = function ({onmessage}) {
 
 	var handShakeData = JSON.stringify({ c: "connect", d: roomId });
 
-    var ws = new WebSocket('ws://192.168.2.121:3030');
+    var ws = new WebSocket('ws://localhost:3030');
 
     var handShake = setInterval(function () {
         if (ws.readyState === 1) {
