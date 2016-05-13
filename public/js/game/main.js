@@ -122,7 +122,6 @@ const SCALE = 2;
                 canvas.drawSprite(player)
             });
             this.level.renderLayer(canvas, this.level.layers.foreground);
-            this.level.renderLayer(canvas, this.level.layers.foreground);
         },
     });
 
