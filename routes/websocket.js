@@ -30,8 +30,8 @@ let commands = {
             Room.loadEnemyPlayer(playerId, (err, enemyId) => {
               if (!err && enemyId) {
                 let client = players.get(enemyId);
-                client.send(JSON.stringify({c: 'start', d: 'Player 2 connected'}));
-                this.send(JSON.stringify({c: 'start', d: 'Player 2 connected'}));
+                client.send(JSON.stringify({c: 'start', d: 'player1'}));
+                this.send(JSON.stringify({c: 'start', d: 'player2'}));
               } else {
                 this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
               }

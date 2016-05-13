@@ -29,13 +29,13 @@ var FLAG = 256;
             master.controlledPlayer = null;
             master.flagHunter = null;
             master.spawnPlayer1 = function (x, y) {
-                master.player1 = createPlayer();
+                master.player1 = createPlayer(1);
                 master.player1.location = new Utility.Vector2(x, y);
                 master.player1.image = game.load.images.get('spritesheet');
                 master.players.push(master.player1);
             }
             master.spawnPlayer2 = function (x, y) {
-                master.player2 = createPlayer();
+                master.player2 = createPlayer(2);
                 master.player2.location = new Utility.Vector2(x, y);
                 master.player2.image = game.load.images.get('spritesheet');
                 master.players.push(master.player2);
