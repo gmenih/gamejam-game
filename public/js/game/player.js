@@ -207,7 +207,7 @@ var createPlayer = function (i) {
 
         // Update falling animation.
         if (Math.abs(player.velocity.y) > 0.5) {
-            player.animation.play('falling-' + player.velocity.x > 0 ? 'right' : 'left');
+            player.animation.play('falling-' + (player.velocity.x > 0 ? 'right' : 'left'));
         }
 
         // Update animation.
