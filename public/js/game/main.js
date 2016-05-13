@@ -47,8 +47,7 @@ const SCALE = 1;
                             case 'start':
                                 master.player.connected = true;
                                 master.enemy_player = createPlayer();
-                                // master.enemy_player.update = function () {}
-                                master.enemy_player.image = game.load.images.get('spritesheet');
+                                master.enemy_player.image = master.player.image;
                                 master.enemy_player.input = {
                                     right: false,
                                     left: false,
@@ -57,11 +56,11 @@ const SCALE = 1;
                                 master.enemy_player.getInput = function (keyboard) {
                                     return master.enemy_player.input;
                                 };
-
-                                // master.enemy_player.update = function () {}
                                 master.enemy_player.sendInput = function () {
                                     master.enemy_player.input.jump = false;
                                 }
+                                console.log(master.enemy_player);
+                                console.log(master.player);
                                 master.players.push(master.enemy_player);
                                 break;
                             case 'input':
@@ -120,8 +119,7 @@ const SCALE = 1;
             this.level.renderLayer(canvas, this.level.layers.background);
             this.level.renderLayer(canvas, this.level.layers.middleground);
             this.players.forEach((player, $i) => {
-                // canvas.drawSprite(this.player)
-                canvas.drawRect(player.getBounds(), ['red', 'green'][$i]);
+                canvas.drawSprite(player)
             });
             this.level.renderLayer(canvas, this.level.layers.foreground);
             this.level.renderLayer(canvas, this.level.layers.foreground);
