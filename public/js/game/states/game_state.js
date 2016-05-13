@@ -35,12 +35,6 @@ Utility.Game.addState('game', {
         this.players.forEach((player) => {
             player.update(dt, this);
             if (player.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
-                if (player.name === 'player1'){
-                    this.flag.animation.play('red-holding');
-                }
-                else{
-                    this.flag.animation.play('blue-holding');
-                }
                 if (player.name === this.controlledPlayer.name){
                     this.flag.location = this.controlledPlayer.location;
                     this.controlledPlayer.flag = this.flag;

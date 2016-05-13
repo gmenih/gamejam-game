@@ -125,6 +125,10 @@ var createPlayer = function (i) {
             player.idle_animation = 'idle-right';
             if (player.flag){
                 player.flag.anchor = new Utility.Vector2(.2, .4);
+                if (player.name === 'player1')
+                    player.flag.animation.play('red-holding-right')
+                else
+                    player.flag.animation.play('blue-holding-right')
             }
         } else if (input.left) {
             player.velocity.x = -player.speed;
@@ -132,6 +136,10 @@ var createPlayer = function (i) {
             player.idle_animation = 'idle-left';
             if (player.flag){
                 player.flag.anchor = new Utility.Vector2(-.2, .4);
+                if (player.name === 'player1')
+                    player.flag.animation.play('red-holding-left')
+                else
+                    player.flag.animation.play('blue-holding-left')
             }
         } else {
             player.velocity.x = player.velocity.x * player.deacceleration;

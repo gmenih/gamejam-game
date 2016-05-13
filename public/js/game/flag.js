@@ -10,16 +10,28 @@ var createFlag = function() {
       new Utility.Rectangle(32, 192, 32, 64)
     ]
   });
-  flag.animation.add('red-holding', {
+  flag.animation.add('red-holding-right', {
     speed: 0,
     frames: [
       new Utility.Rectangle(64, 192, 32, 32)
     ]
   });
-  flag.animation.add('blue-holding', {
+  flag.animation.add('red-holding-left', {
+    speed: 0,
+    frames: [
+      new Utility.Rectangle(96, 224, 32, 32)
+    ]
+  });
+  flag.animation.add('blue-holding-right', {
     speed: 0,
     frames: [
       new Utility.Rectangle(96, 192, 32, 32)
+    ]
+  });
+  flag.animation.add('blue-holding-left', {
+    speed: 0,
+    frames: [
+      new Utility.Rectangle(128, 224, 32, 32)
     ]
   });
   flag.animation.play('hover');
