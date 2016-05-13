@@ -24,10 +24,6 @@ Utility.Game.addState('game', {
             game.load.images.get('tileset'),
             game.load.data.get('level-1')
         );
-
-        this.background = new Utility.Sprite();
-        this.background.image = game.load.images.get('tileset');
-        this.background.src_rect = new Utility.Rectangle(0, 155, 450, 350);
     },
 
     update: function (dt, game) {
@@ -61,13 +57,11 @@ Utility.Game.addState('game', {
         this.camera = offset.copy();
         canvas.context.clearRect(offset.x, offset.y, WIDTH, HEIGHT);
 
-        // Offset background.
-        this.background.location = offset.copy();
-
         // Render elements.
-        this.canvas.drawSprite(this.background);
         this.level.renderLayer(canvas, this.level.layers.background);
         this.level.renderLayer(canvas, this.level.layers.middleground);
+        canvas.drawSprite(this.red_goal);
+        canvas.drawSprite(this.blue_goal);
         canvas.drawSprite(this.flag);
         this.players.forEach((player, $i) => {
             canvas.drawSprite(player)
@@ -91,6 +85,12 @@ Utility.Game.addState('game', {
                         break;
                         case FLAG:
                             master.spawnBobi($x * 16, $y * 16);
+                        break;
+                        case GOAL_BLUE:
+                            master.spawnBlueGoal($x * 16, $y * 16);
+                        break;
+                        case GOAL_RED:
+                            master.spawnRedGoal($x * 16, $y * 16);
                         break;
                     }
                 }
@@ -185,10 +185,16 @@ Utility.Game.addState('game', {
     },
 
     spawnRedGoal: function (x, y) {
+        this.red_goal = createGoal(1);
+        this.red_goal.location = new Utility.Vector2(x, y - 16);
+        this.red_goal.image = this.spritesheet;
+        console.log(this.red_goal);
+    }, 
 
-    },
-
-    spawnBlueGol: function (x, y) {
-
+    spawnBlueGoal: function (x, y) {
+        this.blue_goal = createGoal(2);
+        this.blue_goal.location = new Utility.Vector2(x, y - 16);
+        this.blue_goal.image = this.spritesheet;
+        console.log(this.blue_goal);
     },
 });
