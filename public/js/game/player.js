@@ -175,8 +175,8 @@ var createPlayer = function (i) {
                 if (tile !== null && zone.overlaps(tile)) {
                     let bounds = player.getBounds();
                     let distance = new Utility.Vector2(
-                        (bounds.x - tile.origin.x) / (bounds.w + tile.w),
-                        (bounds.y - tile.origin.y) / (bounds.h + tile.h)
+                        (bounds.origin.x - tile.origin.x) / (bounds.w + tile.w),
+                        (bounds.origin.y - tile.origin.y) / (bounds.h + tile.h)
                     );
 
                     if (Math.abs(distance.x) < Math.abs(distance.y)) {
