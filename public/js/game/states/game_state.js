@@ -35,17 +35,28 @@ Utility.Game.addState('game', {
         this.flag.animation.update(dt);
         this.players.forEach((player) => {
             player.update(dt, this);
-            if (player.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
-                if (player.name === this.controlledPlayer.name){
-                    this.flag.location = this.controlledPlayer.location;
-                    this.controlledPlayer.flag = this.flag;
-                    this.ws.send(JSON.stringify({c: 'pickup', d: {index: this.controlledPlayer.request_count}}));
-                    this.controlledPlayer.request_count++;
-                }
-                this.flag.size = new Utility.Vector2(32, 32);
-
-            }
         });
+        if (this.controlledPlayer.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
+            this.flag.location = this.controlledPlayer.location;
+            this.controlledPlayer.flag = this.flag;
+            this.ws.send(JSON.stringify({c: 'pickup', d: {index: this.controlledPlayer.request_count}}));
+            this.controlledPlayer.request_count++;
+            this.flag.size = new Utility.Vector2(32, 32);
+        }
+        if (this.controlledPlayer.flag) {
+            if (this.controlledPlayer.name === 'player1') {
+                if (this.controlledPlayer.getCollisionZone(dt).overlaps(this.red_goal.getBounds())) {
+                    game.states.get('winning').winner = this.controlledPlayer;
+                    game.setState('winning');
+                }
+            } else {
+                if (this.controlledPlayer.getCollisionZone(dt).overlaps(this.blue_goal.getBounds())) {
+                    game.states.get('winning').winner = this.controlledPlayer;
+                    game.setState('winning');
+                }
+            }
+        }
+
     },
 
     render: function (canvas) {
@@ -156,6 +167,17 @@ Utility.Game.addState('game', {
                     master.controlledPlayer.flag = null;
                     master.flagHunter.flag = master.flag;
                     master.flag.location = master.flagHunter.location;
+                    if (master.flagHunter.idle_animation === 'idle-right'){
+                        if (master.flagHunter.name === 'player1')
+                            master.flagHunter.flag.animation.play('red-holding-right')
+                        else
+                            master.flagHunter.flag.animation.play('blue-holding-right')
+                    } else {
+                         if (master.flagHunter.name === 'player1')
+                            master.flagHunter.flag.animation.play('red-holding-left')
+                        else
+                            master.flagHunter.flag.animation.play('blue-holding-left')
+                    }
                     break;
                 default:
                     console.log(data);

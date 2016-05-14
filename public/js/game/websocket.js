@@ -1,10 +1,11 @@
 var getWebSocket = function ({onmessage}) {
 
+    var loc = document.location;
+
 	var roomId = document.getElementById('gameId').value;
 
 	var handShakeData = JSON.stringify({ c: "connect", d: roomId });
-
-    var ws = new WebSocket('ws://localhost:3000');
+    var ws = new WebSocket('ws://' + loc.hostname + ':' + loc.port);
 
     var handShake = setInterval(function () {
         if (ws.readyState === 1) {

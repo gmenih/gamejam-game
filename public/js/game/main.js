@@ -1,6 +1,6 @@
 // CONST VALUES
 const GRAVITY = 0.003;
-const WIDTH = 800;
+const WIDTH = document.body.clientWidth;
 const HEIGHT = 600;
 const SCALE = 2;
 var PLAYER_1 = 52;
