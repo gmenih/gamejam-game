@@ -49,13 +49,13 @@ module.exports = function (expressServer) {
           room.save();
           // If player already in room
           if (rooms.has(room.id)) {
-            console.log("Adding player %s to room %s", playerId, room._id);
+            // console.log("Adding player %s to room %s", playerId, room._id);
             rooms.get(room.id).push(playerId);
             this.sendJSON({c: 'start', d: 'player2'});
             clients.get(getEnemyPlayer(room.id, playerId)).sendJSON({c: 'start', d: 'player1'});
             // broadcastToRoom(room.id, {c: 'start', d: null});
           } else {
-            console.log("Creating new room with player %s", playerId);
+            // console.log("Creating new room with player %s", playerId);
             let players = [playerId];
             // Add this so I can broadcast
             rooms.set(room.id, players);
@@ -124,7 +124,7 @@ module.exports = function (expressServer) {
 
   let handleMessage = function (message) {
     console.time('messageRequest');
-    console.log('%s: %s', this.id, message);
+    // console.log('%s: %s', this.id, message);
     let d;
     try {
       d = JSON.parse(message);
@@ -154,7 +154,7 @@ module.exports = function (expressServer) {
       break;
       default:
         commands.passThru.call(this, d.d);
-        console.log('Unknown command: %s', d.c);
+        // console.log('Unknown command: %s', d.c);
       break;
     }
   }
@@ -169,11 +169,11 @@ module.exports = function (expressServer) {
     let roomId = this.roomId;
     try {
       rooms.get(roomId).splice(rooms.get(roomId).indexOf(clientId), 1);
-      console.log('%s has disconnected.', clientId);
+      // console.log('%s has disconnected.', clientId);
       clients.delete(clientId);
       broadcastToRoom(roomId, {c: 'left', d: {message: 'Enemy player left'}});
     } catch (ex) {
-      console.log("%s wasn't in a room.", clientId);
+      // console.log("%s wasn't in a room.", clientId);
     }
   }
 }

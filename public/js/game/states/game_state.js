@@ -187,7 +187,7 @@ Utility.Game.addState('game', {
                     game.setState('winning');
                 break;
                 default:
-                    console.log(data);
+                    // console.log(data);
                     break;
             }
         };
@@ -219,13 +219,13 @@ Utility.Game.addState('game', {
         this.red_goal = createGoal(1);
         this.red_goal.location = new Utility.Vector2(x, y - 16);
         this.red_goal.image = this.spritesheet;
-        console.log(this.red_goal);
+        // console.log(this.red_goal);
     },
 
     spawnBlueGoal: function (x, y) {
         this.blue_goal = createGoal(2);
         this.blue_goal.location = new Utility.Vector2(x, y - 16);
         this.blue_goal.image = this.spritesheet;
-        console.log(this.blue_goal);
+        // console.log(this.blue_goal);
     },
 });

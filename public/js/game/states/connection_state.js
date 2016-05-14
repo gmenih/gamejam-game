@@ -38,6 +38,6 @@ Utility.Game.addState('connecting', {
     },
 
     render: function (canvas) {
-        canvas.drawText('Connecting ...', new Utility.Vector2(100));
+        canvas.drawText('Waiting for other player...', new Utility.Vector2(100));
     }
 });
