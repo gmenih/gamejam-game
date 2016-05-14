@@ -1,9 +1,10 @@
 Utility.Game.addState('game', {
-
+    game: null,
     preload: function (game) {
         game.load.image('tileset', '/assets/tileset.png');
         game.load.image('spritesheet', '/assets/spritesheet.png');
         game.load.json('level-1', '/assets/maps/level-1.json');
+        this.game = game;
     },
 
     onready: function (game) {
@@ -36,7 +37,7 @@ Utility.Game.addState('game', {
         this.players.forEach((player) => {
             player.update(dt, this);
         });
-        if (this.controlledPlayer.getCollisionZone(dt).overlaps(this.flag.getBounds())) {
+        if (this.controlledPlayer.getCollisionZone(dt).overlaps(this.flag.getBounds()) && !this.controlledPlayer.flag) {
             this.flag.location = this.controlledPlayer.location;
             this.controlledPlayer.flag = this.flag;
             this.ws.send(JSON.stringify({c: 'pickup', d: {index: this.controlledPlayer.request_count}}));
@@ -46,11 +47,13 @@ Utility.Game.addState('game', {
         if (this.controlledPlayer.flag) {
             if (this.controlledPlayer.name === 'player1') {
                 if (this.controlledPlayer.getCollisionZone(dt).overlaps(this.red_goal.getBounds())) {
+                    this.ws.send(JSON.stringify({c:'win', d:{index: this.controlledPlayer.request_count}}));
                     game.states.get('winning').winner = this.controlledPlayer;
                     game.setState('winning');
                 }
             } else {
                 if (this.controlledPlayer.getCollisionZone(dt).overlaps(this.blue_goal.getBounds())) {
+                    this.ws.send(JSON.stringify({c:'win', d:{index: this.controlledPlayer.request_count}}));
                     game.states.get('winning').winner = this.controlledPlayer;
                     game.setState('winning');
                 }
@@ -131,11 +134,11 @@ Utility.Game.addState('game', {
             master.flagHunter.input.jump = false;
         }
 
-        master.bindSocket(ws);
+        master.bindSocket(ws, this.game);
     },
 
     // WS events
-    bindSocket: function (ws) {
+    bindSocket: function (ws, game) {
         var request_count = 0;
 
         var master = this;
@@ -179,6 +182,10 @@ Utility.Game.addState('game', {
                             master.flagHunter.flag.animation.play('blue-holding-left')
                     }
                     break;
+                case 'win':
+                    game.states.get('winning').winner = master.flagHunter;
+                    game.setState('winning');
+                break;
                 default:
                     console.log(data);
                     break;

@@ -114,7 +114,7 @@ module.exports = function (expressServer) {
     playerWin: function (data) {
       try {
         let enemyClient = clients.get(getEnemyPlayer(this.roomId, this.id));
-        enemyClient.sendJSON({c: 'dead', d: data});
+        enemyClient.sendJSON({c: 'win', d: data});
       } catch (ex) {
         this.sendJSON({c: 'error', d: {message: 'There is no enemy player'}});
       }
