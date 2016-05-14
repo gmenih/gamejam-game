@@ -21,17 +21,16 @@ let RoomSchema = new Schema({
 RoomSchema.statics = {
   loadAllRooms: function (callback) {
     return this.find({$where: "this.players.length < 2"})
-      .select('name password players')
+      .select('_id name password players')
       .exec(callback);
   },
   loadById: function (id, callback) {
-    return this.findOne({_id: id})
-      .select('name password players')
+    return this.findOne({_id: id}, '_id name password players')
       .exec(callback);
   },
   loadEnemyPlayer: function(playerId, callback) {
     return this.findOne({players: playerId})
-      .select('players')
+      .select('_id players')
       .exec((err, data) => {
         if (!err && data) {
           let enemy = data.players.reduce((p, c) => {

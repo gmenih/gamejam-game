@@ -3,227 +3,177 @@ let config = require('../config');
 let mongoose = require('mongoose');
 let Room = mongoose.model('Room');
 
-let server = new WSServer({port: config.socketPort});
+module.exports = function (expressServer) {
+  // Listen on same port as express
+  let server = WSServer({server: expressServer});
+  // This map saves all the clients with their unique ids
+  let clients = new Map();
+  let rooms = new Map();
+  let broadcastToRoom = function (roomId, message) {
+    rooms.get(roomId).forEach(playerId => clients.get(playerId).sendJSON(message));
+  }
+  let getEnemyPlayer = function(roomId, clientId) {
+    return rooms.get(roomId).reduce((y, x) => {
+      if (x !== clientId)
+        return x;
+      return y;
+    }, '');
+  }
+  server.on('connection', (client) => {
+    // Client unique identifier
+    let clientId = mongoose.Types.ObjectId().toString();
+    clients.set(clientId, client);
+    // Add id to client
+    client.id = clientId;
+    // So i dont have to stringify
+    client.sendJSON = function (message) {
+      return client.send(JSON.stringify(message));
+    }
+    // handle events
+    client.on('message', handleMessage.bind(client));
+    client.on('close', handleDisconnect.bind(client));
+    client.on('error', handleError.bind(client));
 
-let players = new Map();
-let rplayers = new Map();
-
-server.on('connection', (client) => {
-  client.on('message', handleMessage.bind(client));
-  client.on('close', handleDisconnect);
-  client.on('error', handleError);
-
-  // client.send('Connection received!');
-});
-
-let commands = {
-  connectPlayer: function (roomId) {
-    if (typeof roomId !== undefined) {
+    client.sendJSON({c:'ack', d: 'Your id is ' + clientId});
+  });
+  /** @type {Object} Functions that handle messages */
+  let commands = {
+    connectPlayer: function (roomId) {
       Room.loadById(roomId, (err, room) => {
         if (!err && room) {
-          let playerId = mongoose.Types.ObjectId().toString();
-          players.set(playerId, this);
-          rplayers.set(this, playerId);
+          room.id = room._id.toString();
+          let playerId = this.id;
+          this.roomId = room.id;
+          clients.set(playerId, this);
           room.players.push(playerId);
           room.save();
-          if (room.players.length === 2) {
-            Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-              if (!err && enemyId) {
-                let client = players.get(enemyId);
-                client.send(JSON.stringify({c: 'start', d: 'player1'}));
-                this.send(JSON.stringify({c: 'start', d: 'player2'}));
-              } else {
-                this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
-              }
-            });
-          } else 
-            this.send(JSON.stringify({c: 'wait', d: 'No enemy'}));
+          // If player already in room
+          if (rooms.has(room.id)) {
+            console.log("Adding player %s to room %s", playerId, room._id);
+            rooms.get(room.id).push(playerId);
+            this.sendJSON({c: 'start', d: 'player2'});
+            clients.get(getEnemyPlayer(room.id, playerId)).sendJSON({c: 'start', d: 'player1'});
+            // broadcastToRoom(room.id, {c: 'start', d: null});
+          } else {
+            console.log("Creating new room with player %s", playerId);
+            let players = [playerId];
+            // Add this so I can broadcast
+            rooms.set(room.id, players);
+            this.sendJSON({c: 'wait', d: null});
+          }
         } else {
-          this.send(JSON.stringify({c: 'error', d: 'Room doesnt exist'}));
-        } 
-      });
-    } else {
-      this.send("No room id provided");
-    }
-  },
-  movePlayer: function(data) {
-    let playerId = rplayers.get(this);
-    if (data.hasOwnProperty('location') && data.hasOwnProperty('direction')) {
-      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-        if (!err && enemyId) {
-          let client = players.get(enemyId);
-          client.send(JSON.stringify({c: 'move', d: data}));
-        } else {
-          this.send(JSON.stringify({c: 'wait', d: 'No enemy'}));
+          this.sendJSON({c: 'error', d: {message: 'Room is full or doesnt exist'}});
         }
+        console.timeEnd('messageRequest');
       });
-    } else {
-      this.send(JSON.stringify({c: 'error', d: 'No data'}));
-    }
-  },
-  playerInput: function(data) {
-    let playerId = rplayers.get(this);
-    if (data.hasOwnProperty('location') && data.hasOwnProperty('input')) {
-      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-        if (!err && enemyId) {
-          console.timeEnd('request');
-          let client = players.get(enemyId);
-          client.send(JSON.stringify({c: 'input', d: data}));
-        } else {
-          this.send(JSON.stringify({c: 'wait', d: 'No enemy'}));
+    }, 
+    movePlayer: function (data) {
+      if (data.hasOwnProperty('location') && data.hasOwnProperty('direction')) {
+        try {
+          let enemyClient = clients.get(getEnemyPlayer(this.roomId, this.id));
+          enemyClient.sendJSON({c: 'move', d: data});
+        } catch (ex) {
+          this.sendJSON({c: 'error', d: {message: 'There is no enemy player'}});
         }
-      });
-    } else {
-      this.send(JSON.stringify({c: 'error', d: 'No data'}));
-    }
-  },
-  stopPlayer: function(data) {
-    let playerId = rplayers.get(this);
-    if (data.hasOwnProperty('location')) {
-      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-        if (!err && enemyId) {
-          let client = players.get(enemyId);
-          client.send(JSON.stringify({c: 'stop', d: data}));
-        } else {
-          this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
-        }
-      });
-    } else {
-      this.send(JSON.stringify({c: 'error', d: 'No data'}));
-    }
-  },
-  playerShoot: function(data) {
-    let playerId = rplayers.get(this);
-    if (data.hasOwnProperty('location')
-      && data.hasOwnProperty('direction')) {
-      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-        if (!err && enemyId) {
-          let client = players.get(enemyId);
-          client.send(JSON.stringify({c: 'shoot', d: data}));
-        } else {
-          this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
-        }
-      });
-    } else {
-      this.send(JSON.stringify({c:'error', d: 'No data'}));
-    }
-  },
-  playerDead: function() {
-    let playerId = rplayers.get(this);
-    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-      if (!err && enemyId) {
-        let client = players.get(enemyId);
-        client.send(JSON.stringify({c: 'dead', d: data}));
       } else {
-        this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
+        this.sendJSON({c: 'error', d: {message: 'Incorrect move'}});
       }
-    });
-  },
-  playerRespawn: function(data) {
-    let playerId = rplayers.get(this);
-    if (data.hasOwnProperty('location')) {
-      Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-        if (!err && enemyId) {
-          let client = players.get(enemyId);
-          client.send(JSON.stringify({c: 'respawn', d: data}));
-        } else {
-          this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
+      console.timeEnd('messageRequest');
+    },
+    playerInput: function (data) {
+      if (data.hasOwnProperty('location') && data.hasOwnProperty('input')) {
+        try {
+          let enemyClient = clients.get(getEnemyPlayer(this.roomId, this.id));
+          enemyClient.sendJSON({c: 'input', d: data});
+        } catch (ex) {
+          this.sendJSON({c: 'error', d: {message: 'There is no enemy player'}});
         }
-      });
-    } else {
-      this.send(JSON.stringify({c:'error', d: 'No location'}));
+      } else {
+        this.sendJSON({c: 'error', d: {message: 'Bad input'}})
+      }
+      console.timeEnd('messageRequest');
+    },
+    playerPickup: function (data) {
+      try {
+        let enemyClient = clients.get(getEnemyPlayer(this.roomId, this.id));
+        enemyClient.sendJSON({c: 'pickup', d: data});
+      } catch (ex) {
+        this.sendJSON({c: 'error', d: {message: 'There is no enemy player'}});
+      }
+      console.timeEnd('messageRequest');
+    },
+    playerDead: function (data) {
+      try {
+        let enemyClient = clients.get(getEnemyPlayer(this.roomId, this.id));
+        enemyClient.sendJSON({c: 'dead', d: data});
+      } catch (ex) {
+        this.sendJSON({c: 'error', d: {message: 'There is no enemy player'}});
+      }
+      console.timeEnd('messageRequest');
+    },
+    playerWin: function (data) {
+      try {
+        let enemyClient = clients.get(getEnemyPlayer(this.roomId, this.id));
+        enemyClient.sendJSON({c: 'dead', d: data});
+      } catch (ex) {
+        this.sendJSON({c: 'error', d: {message: 'There is no enemy player'}});
+      }
+      console.timeEnd('messageRequest');
     }
-  },
-  playerPickFlag: function(data) {
-    let playerId = rplayers.get(this);
-    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-      if (!err && enemyId) {
-        let client = players.get(enemyId);
-        client.send(JSON.stringify({c: 'pickup', d: data}));
-      } else {
-        this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
-      }
-    });
-  },
-  playerWin: function(data) {
-    let playerId = rplayers.get(this);
-    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-      if (!err && enemyId) {
-        let client = players.get(enemyId);
-        client.send(JSON.stringify({c: 'win', d: data}));
-      } else {
-        this.send(JSON.stringify({c: 'error', d: 'No enemy found'}));
-      }
-    });
-  },
-  unrecognized: function() {
-    this.send(JSON.stringify({c: 'error', d: 'Unknown command'}));
-  },
-  allowAny: function(message) {
-    let playerId = rplayers.get(this);
-    Room.loadEnemyPlayer(playerId, (err, enemyId) => {
-      if (!err && enemyId) {
-        let client = players.get(enemyId);
-        client.send(JSON.stringify(m));
-      } else {
-        this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
-      }
-    })
   }
-}
 
-function handleMessage (msg) {
-  let m;
-  try {
-    m = JSON.parse(msg);
-  } catch (ex) {
-    console.error(ex);
-    return;
-  }
-  console.time('request');
-  if (m.hasOwnProperty('c')) {
-    switch(m.c) {
+  let handleMessage = function (message) {
+    console.time('messageRequest');
+    console.log('%s: %s', this.id, message);
+    let d;
+    try {
+      d = JSON.parse(message);
+    } catch (ex) {
+      console.error("Couldn't parse JSON");
+    }
+    if (!d.hasOwnProperty('c'))
+      return;
+    switch (d.c) {
       case 'connect':
-        commands.connectPlayer.call(this, m.d);
-        break;
+        commands.connectPlayer.call(this, d.d);
+      break;
       case 'move':
-        commands.movePlayer.call(this, m.d);
-        break;
+        commands.movePlayer.call(this, d.d);
+      break;
       case 'input':
-        commands.playerInput.call(this, m.d);
-        break;
-      case 'stop':
-        commands.stopPlayer.call(this, m.d);
-        break;
-      case 'shoot':
-        commands.playerShoot.call(this, m.d);
-        break;
-      case 'dead':
-        commands.playerDead.call(this, m.d);
-        break;
-      case 'respawn':
-        commands.playerRespawn.call(this, m.d);
-        break;
+        commands.playerInput.call(this, d.d);
+      break;
       case 'pickup':
-        commands.playerPickFlag.call(this, m.d);
-        break;
+        commands.playerPickup.call(this, d.d);
+      break;
+      case 'dead':
+        commands.playerDead.call(this, d.d);
+      break;
       case 'win':
-        commands.playerWin.call(this, m.d);
-        break;
+        commands.playerWin.call(this, d.d);
+      break;
       default:
-        commands.allowAny.call(this, m);
-        break;
+        commands.passThru.call(this, d.d);
+        console.log('Unknown command: %s', d.c);
+      break;
     }
-  } else {
-    console.error('No command given');
-    this.send(JSON.stringify({c: 'error', d: 'No enemy'}));
   }
-}
 
-function handleDisconnect () {
-  console.log('Player disconnected');
-}
+  let handleError = function (error) {
+    console.error('There was an error');
+    console.error(client, error);
+  }
 
-function handleError () {
-  console.log('Error');
+  let handleDisconnect = function(code) {
+    let clientId = this.id;
+    let roomId = this.roomId;
+    try {
+      rooms.get(roomId).splice(rooms.get(roomId).indexOf(clientId), 1);
+      console.log('%s has disconnected.', clientId);
+      clients.delete(clientId);
+      broadcastToRoom(roomId, {c: 'left', d: {message: 'Enemy player left'}});
+    } catch (ex) {
+      console.log("%s wasn't in a room.", clientId);
+    }
+  }
 }

@@ -4,8 +4,10 @@ let db = require('../src/database');
 /** Require models */
 require('../src/models/room');
 let app = require('../app');
+let websocket = require('../routes/websocket');
 let config = require('../config');
 
 let listener = app.listen(config.httpPort || 3000, () => {
   console.log(`Server listening on ${listener.address().port}`);
+  websocket(listener);
 });
